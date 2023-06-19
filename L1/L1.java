@@ -1,6 +1,6 @@
 /*
  *  Copyright (C) 2022 Lamberto Colazzo
- *
+ *  
  *  This file is part of the ConnectX software developed for the
  *  Intern ship of the course "Information technology", University of Bologna
  *  A.Y. 2021-2022.
@@ -19,14 +19,13 @@
 package connectx.L1;
 
 import connectx.CXPlayer;
+import connectx.CXBoard;
 import connectx.CXGameState;
 import connectx.CXCell;
 import java.util.TreeSet;
 import java.util.Random;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
-
-import CXBoard;
 
 /**
  * Software player only a bit smarter than random.
@@ -57,7 +56,7 @@ public class L1 implements CXPlayer {
 	/**
 	 * Selects a free colum on game board.
 	 * <p>
-	 * Selects a winning column (if any), otherwise selects a column (if any)
+	 * Selects a winning column (if any), otherwise selects a column (if any) 
 	 * that prevents the adversary to win with his next move. If both previous
 	 * cases do not apply, selects a random column.
 	 * </p>
@@ -66,11 +65,11 @@ public class L1 implements CXPlayer {
 		START = System.currentTimeMillis(); // Save starting time
 
 		Integer[] L = B.getAvailableColumns();
-		int save    = L[rand.nextInt(L.length)]; // Save a random column
+		int save    = L[rand.nextInt(L.length)]; // Save a random column 
 
 		try {
 			int col = singleMoveWin(B,L);
-			if(col != -1)
+			if(col != -1) 
 				return col;
 			else
 				return singleMoveBlock(B,L);
@@ -89,7 +88,7 @@ public class L1 implements CXPlayer {
 	 * Check if we can win in a single move
 	 *
 	 * Returns the winning column if there is one, otherwise -1
-	 */
+	 */	
 	private int singleMoveWin(CXBoard B, Integer[] L) throws TimeoutException {
     for(int i : L) {
 			checktime(); // Check timeout at every iteration
@@ -102,7 +101,7 @@ public class L1 implements CXPlayer {
 	}
 
 	/**
-   * Check if we can block adversary's victory
+   * Check if we can block adversary's victory 
    *
    * Returns a blocking column if there is one, otherwise a random one
    */
@@ -126,7 +125,7 @@ public class L1 implements CXPlayer {
 						T.remove(i); // We ignore the i-th column as a possible move
 						stop = true; // We don't need to check more
 					}
-					B.unmarkColumn(); //
+					B.unmarkColumn(); // 
 				}
 			}
 			B.unmarkColumn();

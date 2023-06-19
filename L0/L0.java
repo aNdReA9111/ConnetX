@@ -1,6 +1,6 @@
 /*
  *  Copyright (C) 2022 Lamberto Colazzo
- *
+ *  
  *  This file is part of the ConnectX software developed for the
  *  Intern ship of the course "Information technology", University of Bologna
  *  A.Y. 2021-2022.
@@ -19,10 +19,8 @@
 package connectx.L0;
 
 import connectx.CXPlayer;
-
+import connectx.CXBoard;
 import java.util.Random;
-
-import CXBoard;
 
 /**
  * Totally random software player.
@@ -49,6 +47,6 @@ public class L0 implements CXPlayer {
 		return "L0";
 	}
 }
-
-
+	
+	
 

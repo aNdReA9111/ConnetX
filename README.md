@@ -6,8 +6,8 @@
 CXGame application:
 
 - Human vs Computer.  In the connectx/ directory run:
-
-		java -cp ".." connectx.CXGame 6 7 4 connectx.L1.L1
+	
+		java -cp ".." connectx.CXGame 6 7 4 connectx.L0.L0
 
 
 - Computer vs Computer. In the connectx/ directory run:

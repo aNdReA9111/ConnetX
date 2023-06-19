@@ -1,6 +1,6 @@
 /*
  *  Copyright (C) 2022 Lamberto Colazzo
- *
+ *  
  *  This file is part of the ConnectX software developed for the
  *  Intern ship of the course "Information technology", University of Bologna
  *  A.Y. 2021-2022.
@@ -341,7 +341,7 @@ public class CXBoardPanel extends JPanel implements MouseListener, MouseMotionLi
 		else if (ovalWidth == 0)
 			ovalWidth = cellGap;
 
-		for (CXCell c : moves)
+		for (CXCell c : moves) 
 			g2.fillOval(cellGap * c.j + 5 + (cellGap / 2 - ovalWidth / 2), Board_Top_Border + extraBorder + cellGap * c.i + 5, ovalWidth - 10, cellGap - 10);
 
 		// when game is won a token is added to winning pieces
