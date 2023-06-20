@@ -56,7 +56,7 @@
          myWin   = first ? CXGameState.WINP1 : CXGameState.WINP2;
          yourWin = first ? CXGameState.WINP2 : CXGameState.WINP1;
          maximizingCellState = first ? CXCellState.P1 : CXCellState.P2;
-         isMaximizing = first;       
+         isMaximizing = true;       
          TIMEOUT = timeout_in_secs;
      }
 
@@ -66,7 +66,7 @@
 	}
 
     public String playerName() {
-        return "LLA";
+        return "AFLP";
     }
 
     private int[] AlphaBeta_Pruning(CXBoard B, boolean isMax, int alpha, int beta, int depth) throws TimeoutException {
@@ -79,6 +79,14 @@
         }
         else if(isMax){
             pair[0] = -1000000;
+            /*
+            
+            
+            prendi la configurazione che hai qua
+
+            chiami uan funzione evalColonne(B.getAvailableColumns())
+            questa funzione l'array eval
+            */
             for(int i : B.getAvailableColumns()){ //possibile euristica sull'ordinamento
                 B.markColumn(i);
                 int tmp = AlphaBeta_Pruning(B, false, alpha, beta, depth-1)[0];
@@ -311,7 +319,66 @@
 
             return eval;
         }
-    //return 0;
+    }
+
+    int[] evalColumns(CXBoard B, int[] colonne, boolean isMax){
+        int[] eval = {0};
+        for(int k = 0; k < colonne.length; k++){
+            CXGameState state = B.markColumn(k);
+            CXCellState [][] cellBoard = B.getBoard();
+            int n;
+            //valuto la colonna
+            //assegno lo score a eval[i]
+
+            if(isMax){
+                if(state == myWin){
+                    //punteggio max
+                } else if(state == yourWin){
+                    //punteggio min
+                } else {    //caso generale
+                    //
+                    int i = B.getLastMove().i, j = B.getLastMove().j;
+                    
+                    //caso orizzontale
+                    n = 1;
+                    int l = 1, r = 1;
+                    boolean condition = false;
+                    for (l = 1; j-l >= 0 && cellBoard[i][j-l] == cellBoard[i][j]; l++) n++; // Backward check
+                    
+                    for (r = 1; j+r <  B.N && cellBoard[i][j+r] == cellBoard[i][j]; r++) n++; // forward check
+                    
+                    eval[k] += n;
+                    //dopo aver contato valutimo quanto siamo vicini alla vittoria
+
+                    // Vertical check
+                    n = 1;
+                    for (int l = 1; i+l <  B.M && cellBoard[i+l][j] == cellBoard[i][j]; l++) n++;
+                    //if (n >= B.x) return true;
+
+                    // Diagonal check
+                    n = 1;
+                    for (int l = 1; i-l >= 0 && j-l >= 0 && cellBoard[i-l][j-l] == cellBoard[i][j]; l++) n++; // Backward check
+                    for (int l = 1; i+l <  B.M && j+l <  B.N && cellBoard[i+l][j+l] == cellBoard[i][j]; l++) n++; // forward check
+                    //if (n >= B.x) return true;
+
+                    // Anti-diagonal check
+                    n = 1;
+                    for (int l = 1; i-l >= 0 && j+l < B.N && cellBoard[i-l][j+l] == cellBoard[i][j]; l++) n++; // Backward check
+                    for (int l = 1; i+l <  B.M && j-l >= 0 && cellBoard[i+l][j-l] == cellBoard[i][j]; l++) n++; // forward check
+                }
+            }else {
+                if(state == myWin){
+                    //punteggio min
+                } else if(state == yourWin){
+                    //punteggio max
+                } else {    //caso generale
+
+                }
+            }
+        
+            B.unmarkColumn();
+        }
+        return eval;
     }
 
     //il costo computazionale e' dettato dal primo for, ossia viene chiamata una offer per n volte
