@@ -27,8 +27,8 @@
  import java.util.TreeSet;
  import java.util.Random;
  import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+ import java.util.concurrent.ExecutionException;
+ import java.util.concurrent.TimeoutException;
  import java.util.PriorityQueue;
  
  /**
@@ -43,6 +43,7 @@ import java.util.concurrent.TimeoutException;
      private CXGameState myWin;
      private CXGameState yourWin;
      private CXCellState maximizingCellState;
+     private boolean isMaximizing;
      private int  TIMEOUT;
      private long START;
  
@@ -55,6 +56,7 @@ import java.util.concurrent.TimeoutException;
          myWin   = first ? CXGameState.WINP1 : CXGameState.WINP2;
          yourWin = first ? CXGameState.WINP2 : CXGameState.WINP1;
          maximizingCellState = first ? CXCellState.P1 : CXCellState.P2;
+         isMaximizing = first;       
          TIMEOUT = timeout_in_secs;
      }
 
@@ -115,7 +117,7 @@ import java.util.concurrent.TimeoutException;
         pair[1] = 3;
         int alpha = -1000000, beta = 1000000;
 
-        for(int i = 0; i < depth; i++){
+        for(int i = 1; i < depth; i++){
             checktime();
             pair = AlphaBeta_Pruning(B, isMax, alpha, beta, i);
         }
@@ -219,7 +221,7 @@ import java.util.concurrent.TimeoutException;
                         condition1 = (cellBoard[i-1][j-1] == CXCellState.FREE);
                     }
                     else condition1 = false;
-                    for(k = 1; enter_check && (i+k < B.M  && j+k < B.N )&& cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
+                    for(k = 1; enter_check && (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
                     if(i+k >= B.M || j+k >= B.N) {
                         condition2 = false;
                     } 
@@ -242,7 +244,7 @@ import java.util.concurrent.TimeoutException;
                     }
 
                     
-                    //controllo anti-diagonale
+                    //controllo anti-diagonale  (destra - sinistra /basso - alto)
                     enter_check = true;
                     condition1 = false;
                     condition2 = false;
@@ -252,7 +254,7 @@ import java.util.concurrent.TimeoutException;
                         condition1 = (cellBoard[i-1][j+1] == CXCellState.FREE);
                     }
                     else condition1 = false;
-                    for(k = 1; enter_check && (i+k < B.M  && j-k >= 0 )&& cellBoard[i+k][j-k] == cellBoard[i][j]; k++) n++;
+                    for(k = 1; enter_check && (i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] == cellBoard[i][j]; k++) n++;
                     if(i+k >= B.M || j-k < 0) {
                         condition2 = false;
                     } 
@@ -371,17 +373,17 @@ import java.util.concurrent.TimeoutException;
         START = System.currentTimeMillis(); // Save starting time
 
 		Integer[] L = B.getAvailableColumns();
-		int out    = L[rand.nextInt(L.length)-1]; // Save a random column 
+		int out    = L[rand.nextInt(L.length)]; // Save a random column 
         try {
-            out = iterativeDeepening(B, false, 5)[1];
+            out = iterativeDeepening(B, isMaximizing, 5)[1];
             return out;
         }catch (TimeoutException e) {
 			System.err.println("Timeout!!! Random column selected");
 			return out;
-		}catch (ArrayIndexOutOfBoundsException e) {
-            // Gestione dell'eccezione ArrayIndexOutOfBoundsException
+		}catch (NullPointerException e) {
+            // Gestione dell'eccezione NullPointerException
             e.printStackTrace();
-            return 0;
+            return out;
         }
     }
 }
