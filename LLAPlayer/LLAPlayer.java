@@ -85,7 +85,9 @@
             chiami uan funzione evalColonne(B.getAvailableColumns())
             questa funzione l'array eval
             */
-            for(int i : B.getAvailableColumns()){ //possibile euristica sull'ordinamento
+            int[] eval = evalColumns(B, isMax);
+            int[] columns = heapsort(B, eval);
+            for(int i : columns){ //possibile euristica sull'ordinamento
                 B.markColumn(i);
                 int tmp = AlphaBeta_Pruning(B, false, alpha, beta, depth-1)[0];
                 if (pair[0] < tmp){
@@ -101,8 +103,9 @@
         }
         else{
             pair[0] = 1000000;
-            for(int i : B.getAvailableColumns()){ //possibile euristica sull'ordinamento
-                B.markColumn(i);
+            int[] eval = evalColumns(B, isMax);
+            int[] columns = heapsort(B, eval);
+            for(int i : columns){ //possibile euristica sull'ordinamento
                 int tmp = AlphaBeta_Pruning(B, true, alpha, beta, depth-1)[0];
                 if (pair[0] > tmp){
                     pair[0] = tmp;
@@ -319,9 +322,11 @@
         }
     }
 
-    int[] evalColumns(CXBoard B, int[] colonne, boolean isMax){
-        int[] eval = {0};
-        for(int k = 0; k < colonne.length; k++){
+    int[] evalColumns(CXBoard B, boolean isMax){
+        int[] eval = new int[B.getAvailableColumns().length];
+
+        for(int k = 0; k < B.getAvailableColumns().length; k++){
+
             CXGameState state = B.markColumn(k);
             CXCellState [][] cellBoard = B.getBoard();
             int n;
@@ -378,7 +383,7 @@
                 for (l = 1; i+l <  B.M && j-l >= 0 && cellBoard[i+l][j-l] == cellBoard[i][j]; l++) n++; // controllo in avanti
 
                 for (int p = l; i-p >= 0   && j+p < B.N && cellBoard[i-p][j+p] == CXCellState.FREE; p++) countFree++; // controllo all'indietro
-                for (int p = l; i+p <  B.M && j-p >=  0 && cellBoard[i+p][j-p] == CXCellState.FREE; p++) countFree++; // controllo in avanti
+                for (int p = l; i+p < B.M  && j-p >=  0 && cellBoard[i+p][j-p] == CXCellState.FREE; p++) countFree++; // controllo in avanti
 
                 //se nelle celle contigue è possbile arrivare a una sequenza vincente assegno il valore a questa mossa
                 if(countFree + n >= B.X)    eval[k] += n;
@@ -397,7 +402,7 @@
 
     //offer corrisponde al costo computazionale di una insert (O(log(n))
     //poll corrisponde a una findMax + una deleteMax, ossia (O(1)) + O(log(n)) = O(log(n))
-    private int[] heapsort(CXBoard B, int eval[]){
+    private int[] heapsort(CXBoard B, int eval[]) throws ArrayIndexOutOfBoundsException{
         PriorityQueue<Pair> priorityQueue = new PriorityQueue<>();
         Pair[] pairs = new Pair[B.getAvailableColumns().length];
         int[] columns = new int[B.getAvailableColumns().length];
