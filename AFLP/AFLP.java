@@ -72,9 +72,9 @@
         else if(isMax){
             pair[0] = -1000000;                     //eval
             pair[1] = B.getAvailableColumns()[0];
+            int len = B.getAvailableColumns().length;
 
-            int[] columns = new int[B.getAvailableColumns().length];
-            int[] eval = new int[B.getAvailableColumns().length];
+            int[] eval = new int[len];
             int c = 0;
 
             for(int i : B.getAvailableColumns()){
@@ -84,15 +84,22 @@
                 c++;
             }
             c = 0;
+            
+            //eval = evalColumns(B, isMax);
+            PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
 
-            columns = heapsort(B, eval);
+            for(int i = 0; i < len; i++)
+                priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
 
-            for(int i : columns){
-                B.markColumn(i);
+            for(int i = 0; i < len; i++){
+                Pair p = priorityQueue.poll();
+                int col = p.second;
+
+                B.markColumn(col);
                 int tmp = AlphaBeta_Pruning(B, false, alpha, beta, depth-1)[0];
                 if (pair[0] < tmp){
                     pair[0] = tmp;
-                    pair[1] = i;
+                    pair[1] = col;
                 }
                 B.unmarkColumn();
                 if(pair[0] > alpha)
@@ -107,9 +114,9 @@
         else{
             pair[0] = 1000000;
             pair[1] = B.getAvailableColumns()[0];
+            int len = B.getAvailableColumns().length;
 
-            int[] columns = new int[B.getAvailableColumns().length];
-            int[] eval = new int[B.getAvailableColumns().length];
+            int[] eval = new int[len];
             int c = 0;
 
             for(int i : B.getAvailableColumns()){
@@ -119,14 +126,24 @@
                 c++;
             }
             c = 0;
+            //eval = evalColumns(B, isMax);
 
-            columns = heapsort(B, eval);
-            for(int i : columns) {
-                B.markColumn(i);
+            PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
+
+            for(int i = 0; i < len; i++)
+                priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
+
+            //columns = heapsort(B, eval);
+
+            for(int i = 0; i < len; i++){
+                Pair p = priorityQueue.poll();
+                int col = p.second;
+
+                B.markColumn(col);
                 int tmp = AlphaBeta_Pruning(B, true, alpha, beta, depth-1)[0];
                 if (pair[0] > tmp){
                     pair[0] = tmp;
-                    pair[1] = i;
+                    pair[1] = col;
                 }
                 B.unmarkColumn();
                 if(pair[0] < beta)
@@ -347,6 +364,7 @@
 
             if(state == myWin)              eval[k] =  1000;
             else if(state == yourWin)       eval[k] = -1000;
+            else if(state == CXGameState.DRAW) eval[k] = 0;
             else {    //caso generale
                 //prendo le "coordinate" dell'ultima mossa effettuata
                 int i = B.getLastMove().i, j = B.getLastMove().j;
@@ -450,22 +468,23 @@
 
     //offer corrisponde al costo computazionale di una insert (O(log(n))
     //poll corrisponde a una findMax + una deleteMax, ossia (O(1)) + O(log(n)) = O(log(n))
+
+    /*
     private int[] heapsort(CXBoard B, int eval[]) throws TimeoutException{
-        PriorityQueue<Pair> priorityQueue = new PriorityQueue<>();
-        Pair[] pairs = new Pair[B.getAvailableColumns().length];
-        int[] columns = new int[B.getAvailableColumns().length];
+        int len = B.getAvailableColumns().length;
+        PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
+        int[] columns = new int[len];
 
         checktime();
-        for(int i = 0; i < B.getAvailableColumns().length; i++){
-            pairs[i] = new Pair(eval[i], B.getAvailableColumns()[i]);
-            priorityQueue.offer(pairs[i]);
-        }
+        for(int i = 0; i < len; i++)
+            priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
 
-        for(int i = 0; i < B.getAvailableColumns().length; i++)
+        for(int i = 0; i < len; i++)
             columns[i] = priorityQueue.poll().second;
 
         return columns;
-    }
+    }*/
+
     private int[] iterativeDeepening(CXBoard B, boolean isMax, int depth) throws TimeoutException  {
         int[] pair = new int[2];
         //pair[0] = 0;
@@ -492,9 +511,8 @@
 		Integer[] L = B.getAvailableColumns();
 		int out    = L[rand.nextInt(L.length)]; // Save a random column
 
-        try {   out = iterativeDeepening(B, isMaximizing, 9)[1];       }
+        try {   out = iterativeDeepening(B, isMaximizing, 10)[1];       }
         catch (TimeoutException e) {}
-        catch (ArrayIndexOutOfBoundsException e) { e.printStackTrace(); }
         return out;
     }
 }
