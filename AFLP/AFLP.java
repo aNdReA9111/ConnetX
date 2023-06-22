@@ -72,17 +72,22 @@
         else if(isMax){
             pair[0] = -1000000;                     //eval
             pair[1] = B.getAvailableColumns()[0];
-            /*
-            prendi la configurazione che hai qua
 
-            chiami uan funzione evalColonne(B.getAvailableColumns())
-            questa funzione l'array eval
-            */
-            //int[] eval = evalColumns(B, isMax);
-            //int[] columns = heapsort(B, eval);
-        
+            int[] columns = new int[B.getAvailableColumns().length];
+            int[] eval = new int[B.getAvailableColumns().length];
+            int c = 0;
 
             for(int i : B.getAvailableColumns()){
+                B.markColumn(i);
+                eval[c] = evaluate(B);
+                B.unmarkColumn();
+                c++;
+            }
+            c = 0;
+
+            columns = heapsort(B, eval);
+
+            for(int i : columns){
                 B.markColumn(i);
                 int tmp = AlphaBeta_Pruning(B, false, alpha, beta, depth-1)[0];
                 if (pair[0] < tmp){
@@ -92,7 +97,7 @@
                 B.unmarkColumn();
                 if(pair[0] > alpha)
                     alpha = pair[0];
-                
+
                 if(alpha >= beta){      //cutoff Beta
                     break;
                 }
@@ -102,10 +107,21 @@
         else{
             pair[0] = 1000000;
             pair[1] = B.getAvailableColumns()[0];
-            //int[] eval = evalColumns(B, isMax);
-            //int[] columns = heapsort(B, eval);
 
-            for(int i : B.getAvailableColumns()) {
+            int[] columns = new int[B.getAvailableColumns().length];
+            int[] eval = new int[B.getAvailableColumns().length];
+            int c = 0;
+
+            for(int i : B.getAvailableColumns()){
+                B.markColumn(i);
+                eval[c] = evaluate(B);
+                B.unmarkColumn();
+                c++;
+            }
+            c = 0;
+
+            columns = heapsort(B, eval);
+            for(int i : columns) {
                 B.markColumn(i);
                 int tmp = AlphaBeta_Pruning(B, true, alpha, beta, depth-1)[0];
                 if (pair[0] > tmp){
@@ -313,7 +329,6 @@
             int score4 = 5;
 
             int eval = n1 * score1 + n2 * score2 + n3 * score3 + n4 * score4;
-
             return eval;
         }
     }
@@ -329,7 +344,7 @@
             CXCellState [][] cellBoard = B.getBoard();
             int n;
             //valuto la colonna
-            
+
             if(state == myWin)              eval[k] =  1000;
             else if(state == yourWin)       eval[k] = -1000;
             else {    //caso generale
@@ -476,10 +491,10 @@
 
 		Integer[] L = B.getAvailableColumns();
 		int out    = L[rand.nextInt(L.length)]; // Save a random column
-         
-        try {   out = iterativeDeepening(B, isMaximizing, 7)[1];       }
-        catch (TimeoutException e) {}
 
+        try {   out = iterativeDeepening(B, isMaximizing, 9)[1];       }
+        catch (TimeoutException e) {}
+        catch (ArrayIndexOutOfBoundsException e) { e.printStackTrace(); }
         return out;
     }
 }

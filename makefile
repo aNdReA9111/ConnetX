@@ -1,8 +1,8 @@
-ROUND=1
+ROUND=100
 TIME=10
-M=20
-N=20
-X=10
+M=7
+N=
+X=4
 
 compile:
 	javac -cp ".." *.java */*.java
