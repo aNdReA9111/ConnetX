@@ -16,7 +16,7 @@
  *  GNU General Public License for more details; see <https://www.gnu.org/licenses/>.
  */
 
- package connectx.LLAPlayer;
+ package connectx.AFLP;
 
  import connectx.CXPlayer;
  import connectx.CXBoard;
@@ -31,7 +31,7 @@
  import java.util.concurrent.TimeoutException;
  import java.util.PriorityQueue;
 
- public class LLAPlayer implements CXPlayer {
+ public class AFLP implements CXPlayer {
      private Random rand;
      private CXGameState myWin;
      private CXGameState yourWin;
@@ -41,7 +41,7 @@
      private long START;
 
      /* Default empty constructor */
-     public LLAPlayer() { }
+     public AFLP() { }
 
      public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
         // New random seed for each game
@@ -53,7 +53,7 @@
         TIMEOUT = timeout_in_secs;
      }
 
-     private void checktime() throws TimeoutException {
+    private void checktime() throws TimeoutException {
 		if ((System.currentTimeMillis() - START) / 1000.0 >= TIMEOUT * (99.0 / 100.0))
 			throw new TimeoutException();
 	}
@@ -66,12 +66,12 @@
         int[] pair = new int[2];
         checktime();
         if(depth == 0 || B.gameState() != CXGameState.OPEN){
-            pair[0] = evaluate(B);
-            pair[1] = B.getLastMove().j;
+            pair[0] = evaluate(B);  pair[1] = B.getLastMove().j;
             return pair;
         }
         else if(isMax){
-            pair[0] = -1000000;
+            pair[0] = -1000000;                     //eval
+            pair[1] = B.getAvailableColumns()[0];
             /*
             prendi la configurazione che hai qua
 
@@ -80,6 +80,7 @@
             */
             //int[] eval = evalColumns(B, isMax);
             //int[] columns = heapsort(B, eval);
+        
 
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
@@ -89,6 +90,9 @@
                     pair[1] = i;
                 }
                 B.unmarkColumn();
+                if(pair[0] > alpha)
+                    alpha = pair[0];
+                
                 if(alpha >= beta){      //cutoff Beta
                     break;
                 }
@@ -97,9 +101,11 @@
         }
         else{
             pair[0] = 1000000;
+            pair[1] = B.getAvailableColumns()[0];
             //int[] eval = evalColumns(B, isMax);
             //int[] columns = heapsort(B, eval);
-            for(int i : B.getAvailableColumns()){
+
+            for(int i : B.getAvailableColumns()) {
                 B.markColumn(i);
                 int tmp = AlphaBeta_Pruning(B, true, alpha, beta, depth-1)[0];
                 if (pair[0] > tmp){
@@ -107,26 +113,15 @@
                     pair[1] = i;
                 }
                 B.unmarkColumn();
+                if(pair[0] < beta)
+                    beta = pair[0];
+
                 if(alpha >= beta){      //cutoff Alpha
                     break;
                 }
             }
             return pair;
         }
-    }
-
-    private int[] iterativeDeepening(CXBoard B, boolean isMax, int depth) throws TimeoutException{
-        int[] pair = new int[2];
-        pair[0] = 0;
-        pair[1] = 3;
-        int alpha = -1000000, beta = 1000000;
-
-        for(int i = 1; i < depth; i++){
-            checktime();
-            pair = AlphaBeta_Pruning(B, isMax, alpha, beta, i);
-        }
-
-        return pair;
     }
 
     private int evaluate(CXBoard B) throws TimeoutException {
@@ -328,18 +323,16 @@
         int[] eval = new int[availableColumns.length];
 
         for(int k = 0; k < availableColumns.length; k++){
+            checktime();
 
             CXGameState state = B.markColumn(availableColumns[k]);
             CXCellState [][] cellBoard = B.getBoard();
             int n;
             //valuto la colonna
-            //assegno lo score a eval[i]
-            checktime();
-
+            
             if(state == myWin)              eval[k] =  1000;
             else if(state == yourWin)       eval[k] = -1000;
             else {    //caso generale
-
                 //prendo le "coordinate" dell'ultima mossa effettuata
                 int i = B.getLastMove().i, j = B.getLastMove().j;
 
@@ -458,6 +451,24 @@
 
         return columns;
     }
+    private int[] iterativeDeepening(CXBoard B, boolean isMax, int depth) throws TimeoutException  {
+        int[] pair = new int[2];
+        //pair[0] = 0;
+        //pair[1] = B.getAvailableColumns()[0];
+        int alpha = -1000000, beta = 1000000;
+        try{
+            for(int i = 1; i < depth; i++){
+                checktime();
+                pair = AlphaBeta_Pruning(B, isMax, alpha, beta, i);
+            }
+        }
+        catch (TimeoutException e) {
+            System.err.println("Tempo quasi finito, ritorno una scelta a profondità minore!");
+            return pair;
+        }
+
+        return pair;
+    }
 
     @Override
     public int selectColumn(CXBoard B){
@@ -465,13 +476,11 @@
 
 		Integer[] L = B.getAvailableColumns();
 		int out    = L[rand.nextInt(L.length)]; // Save a random column
-        try {
-            out = iterativeDeepening(B, isMaximizing, 5)[1];
-            return out;
-        }catch (TimeoutException e) {
-			System.err.println("Timeout!!! Random column selected");
-            e.printStackTrace();
-			return out;
-		}
+         
+        try {   out = iterativeDeepening(B, isMaximizing, 7)[1];       }
+        catch (TimeoutException e) {}
+
+        return out;
     }
 }
+

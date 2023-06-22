@@ -1,4 +1,4 @@
-package connectx.LLAPlayer;
+package connectx.AFLP;
 
 class Pair implements Comparable<Pair> {
     int first;
