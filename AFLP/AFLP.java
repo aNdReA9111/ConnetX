@@ -27,7 +27,8 @@
  import java.util.TreeSet;
  import java.util.Random;
  import java.util.Arrays;
- import java.util.concurrent.ExecutionException;
+import java.util.Hashtable;
+import java.util.concurrent.ExecutionException;
  import java.util.concurrent.TimeoutException;
  import java.util.PriorityQueue;
 
@@ -39,6 +40,9 @@
      private boolean isMaximizing;
      private int  TIMEOUT;
      private long START;
+
+     private Hashtable<CXBoard, Integer> hashtable = new Hashtable<>();
+
 
      /* Default empty constructor */
      public AFLP() { }
@@ -72,21 +76,24 @@
         else if(isMax){
             pair[0] = -1000000;                     //eval
             pair[1] = B.getAvailableColumns()[0];
-            int len = B.getAvailableColumns().length;
 
+            int len = B.getAvailableColumns().length;
+            PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
             int[] eval = new int[len];
             int c = 0;
 
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
-                eval[c] = evaluate(B);
+                if(hashtable.containsKey(B))
+                    eval[c] = hashtable.get(B);
+                else{
+                    eval[c] = evaluate(B);
+                    hashtable.put(B, eval[c]);
+                }
                 B.unmarkColumn();
                 c++;
             }
             c = 0;
-            
-            //eval = evalColumns(B, isMax);
-            PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
 
             for(int i = 0; i < len; i++)
                 priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
@@ -115,25 +122,26 @@
             pair[0] = 1000000;
             pair[1] = B.getAvailableColumns()[0];
             int len = B.getAvailableColumns().length;
-
+            PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
             int[] eval = new int[len];
             int c = 0;
 
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
-                eval[c] = evaluate(B);
+                if(hashtable.containsKey(B))
+                    eval[c] = hashtable.get(B);
+                else{
+                    eval[c] = evaluate(B);
+                    hashtable.put(B, eval[c]);
+                }
                 B.unmarkColumn();
                 c++;
             }
             c = 0;
-            //eval = evalColumns(B, isMax);
 
-            PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
 
             for(int i = 0; i < len; i++)
                 priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
-
-            //columns = heapsort(B, eval);
 
             for(int i = 0; i < len; i++){
                 Pair p = priorityQueue.poll();
@@ -155,6 +163,18 @@
             }
             return pair;
         }
+    }
+
+    private int evalMove(CXBoard B){
+        int eval = 0;
+        CXCell C = B.getLastMove();
+        CXCellState[][] cellBoard = B.getBoard();
+        int i = C.i, j = C.j;
+
+
+
+
+        return eval;
     }
 
     private int evaluate(CXBoard B) throws TimeoutException {

@@ -1,6 +1,6 @@
 /*
  *  Copyright (C) 2022 Lamberto Colazzo
- *  
+ *
  *  This file is part of the ConnectX software developed for the
  *  Intern ship of the course "Information technology", University of Bologna
  *  A.Y. 2021-2022.
@@ -53,7 +53,7 @@ public class CXBoard {
 	protected LinkedList<CXCell> MC;   // Marked Cells stack (used to undo)
 	protected int                RP[]; // First free row position
 	protected TreeSet<Integer>   AC;   // Availabe (not full) columns
-	
+
 	// we define characters for players (PR for Red, PY for Yellow)
 	private final CXCellState[] Player = {CXCellState.P1, CXCellState.P2};
 
@@ -64,7 +64,7 @@ public class CXBoard {
 
 	/**
 	 * Create a board of size MxN and initialize the game parameters
-	 * 
+	 *
 	 * @param M Board rows
 	 * @param N Board columns
    * @param X Number of symbols to be aligned (horizontally, vertically, diagonally) for a win
@@ -126,7 +126,7 @@ public class CXBoard {
 	 *
 	 * @return State of the <code>i,j</code> cell (FREE,P1,P2)
 	 * @throws IndexOutOfBoundsException If <code>i,j</code> are out of matrix bounds
-	 * 
+	 *
 	 */
 	public CXCellState cellState(int i, int j) throws IndexOutOfBoundsException {
 		if (i < 0 || i >= M || j < 0 || j >= N)
@@ -136,14 +136,14 @@ public class CXBoard {
 	}
 
 	/**
-   * Check whether a column is full 
-   * 
+   * Check whether a column is full
+   *
    * @param col column number
-	 * 
-	 * @return true if col is outside matrix bounds of if it is full  
+	 *
+	 * @return true if col is outside matrix bounds of if it is full
    */
 	public boolean fullColumn(int col) {
-		return  col < 0 || col >= N || RP[col] == -1; 
+		return  col < 0 || col >= N || RP[col] == -1;
 	}
 
 	/**
@@ -152,9 +152,9 @@ public class CXBoard {
 	 * @return CXCell object or null
 	 */
 	public CXCell getLastMove() {
-		if (MC.size() == 0) 
+		if (MC.size() == 0)
 			return null;
-		else 
+		else
 			return MC.peekLast();
 	}
 
@@ -184,7 +184,7 @@ public class CXBoard {
 	public int numOfFreeCells() {
 		return M*N-MC.size();
 	}
-	
+
 	/**
 	 * Returns the number of marked cells in the game board.
 	 *
@@ -196,7 +196,7 @@ public class CXBoard {
 
 	/**
 	 * Mark the first free cell on the selected column
-	 * 
+	 *
 	 * @return CXGameState (OPEN,WINP1,WINP2,DRAW)
 	 */
 	public CXGameState markColumn(int col) throws IndexOutOfBoundsException, IllegalStateException {
@@ -237,7 +237,7 @@ public class CXBoard {
 
 			B[oldc.i][oldc.j] = CXCellState.FREE;
 			RP[oldc.j]++;
-			if(RP[oldc.j] == 0) AC.add(oldc.j); 
+			if(RP[oldc.j] == 0) AC.add(oldc.j);
 
 			currentPlayer = (currentPlayer + 1) % 2;
 			gameState = CXGameState.OPEN;
@@ -250,7 +250,7 @@ public class CXBoard {
 	 * This is the history of the game: the first move is in the array head, the
 	 * last move in the array tail.
 	 * </p>
-	 * 
+	 *
 	 * @return List of marked cells
 	 */
 	public CXCell[] getMarkedCells() {
@@ -262,8 +262,8 @@ public class CXBoard {
    * <p>
    * This is the list of still playable columns in the matrix.
    * </p>
-   * 
-   * @return List of available column indexes 
+   *
+   * @return List of available column indexes
    */
   public Integer[] getAvailableColumns() {
 		return AC.toArray(new Integer[AC.size()]);
@@ -279,7 +279,7 @@ public class CXBoard {
 
 		for(int i = 0; i < M; i++)
 			for(int j = 0; j < N; j++)
-				C[i][j] = B[i][j];		
+				C[i][j] = B[i][j];
 
 		return C;
 	}
