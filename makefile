@@ -1,8 +1,8 @@
-ROUND=1
+ROUND=5
 TIME=10
-M=50
-N=50
-X=10
+M=7
+N=7
+X=5
 
 CORE=1
 
@@ -141,6 +141,148 @@ test:
 	java -cp ".." connectx.CXPlayerTester 7 6 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
 	echo "\n"
 	java -cp ".." connectx.CXPlayerTester 7 6 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+
+full-test:
+	java -cp ".." connectx.CXPlayerTester 4 4 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 4 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 4 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 4 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 4 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 4 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 4 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 4 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 5 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 5 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 5 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 5 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 5 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 5 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 5 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 5 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 6 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 6 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 6 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 6 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 6 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 6 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 6 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 6 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 7 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 7 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 7 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 7 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 7 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 7 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 7 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 7 4 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 4 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 4 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 4 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 4 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 4 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 4 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 5 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 5 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 5 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 5 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 5 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 5 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 5 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 5 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 6 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 6 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 6 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 6 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 6 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 6 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 6 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 6 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 4 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 5 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 6 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
+	echo "\n"
+	java -cp ".." connectx.CXPlayerTester 7 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+
 	echo "\n"
 	java -cp ".." connectx.CXPlayerTester 4 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
 	echo "\n"

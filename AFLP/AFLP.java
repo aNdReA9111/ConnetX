@@ -35,8 +35,7 @@ public class AFLP implements CXPlayer {
     private boolean isMaximizing;
     private int  TIMEOUT;
     private long START;
-    //private Hashtable<String, Integer> hashtable = new Hashtable<>(3^(40*8), 0.75f);
-    private Hashtable<String, Integer> hashtable = new Hashtable<>();
+    private Hashtable<String, Integer> hashtable;
 
     /* Default empty constructor */
     public AFLP() { }
@@ -47,6 +46,7 @@ public class AFLP implements CXPlayer {
         maximizingCellState = first ? CXCellState.P1 : CXCellState.P2;
         isMaximizing = true;
         TIMEOUT = timeout_in_secs;
+        hashtable = new Hashtable<>();
     }
 
     private void checktime() throws TimeoutException {
@@ -60,7 +60,7 @@ public class AFLP implements CXPlayer {
 
     private int[] AlphaBeta_Pruning(CXBoard B, boolean isMax, int alpha, int beta, int depth) throws TimeoutException {
         int[] pair = new int[2];
-        checktime();
+
         if(depth == 0 || B.gameState() != CXGameState.OPEN){
             pair[0] = evaluate(B, B.getBoard());  pair[1] = B.getLastMove().j;
             return pair;
@@ -85,6 +85,7 @@ public class AFLP implements CXPlayer {
             for(int i = 0; i < len; i++)
                 priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
 
+            checktime();
             for(int i = 0; i < len; i++){
                 Pair p = priorityQueue.poll();
                 int col = p.second;
@@ -125,6 +126,7 @@ public class AFLP implements CXPlayer {
             for(int i = 0; i < len; i++)
                 priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
 
+            checktime();
             for(int i = 0; i < len; i++){
                 Pair p = priorityQueue.poll();
                 int col = p.second;
@@ -150,7 +152,7 @@ public class AFLP implements CXPlayer {
     private int evalMove(CXBoard B) throws TimeoutException{
         CXCell C = B.getLastMove();
         CXCellState[][] cellBoard = B.getBoard();
-        int i = C.i, j = C.j, b = 0, n = 1, n1 = 1, n2 = 1, n3 = 1, n4 = 1, b1 = 1;
+        int i = C.i, j = C.j, b = 0, n = 1, n1 = 1, n2 = 1, n3 = 1, n4 = 1, b1 = 1, b2 = 1;
 
         if(B.gameState() == myWin)
             return 1000;
@@ -167,35 +169,37 @@ public class AFLP implements CXPlayer {
             for(k = 1; j+k < B.N && cellBoard[i][j+k] != cellBoard[i][j] && cellBoard[i][j+k] != CXCellState.FREE ; k++) b++;
 
             if(b == B.X - 1) b1++;
+            else if(b == B.X - 2) b2++;
 
             if(n == B.X - 1) n1++;
             else if(n == B.X - 2) n2++;
             else if(n == B.X - 3 && B.X > 5) n3++;
             else if(n == B.X - 4 && B.X > 7) n4++;
-            checktime();
+
             //controllo verticale
             n = 1; b = 0;
             for(k = 1; i+k < B.M && cellBoard[i+k][j] == cellBoard[i][j]; k++) n++;
             for(k = 1; i+k < B.M && cellBoard[i+k][j] != cellBoard[i][j] && cellBoard[i+k][j] != CXCellState.FREE ; k++) b++;
 
             if(b == B.X - 1) b1++;
+            else if(b == B.X - 2) b2++;
 
             if(n == B.X - 1) n1++;
             else if(n == B.X - 2) n2++;
             else if(n == B.X - 3 && B.X > 5) n3++;
             else if(n == B.X - 4 && B.X > 7) n4++;
-
+            checktime();
             //controllo diagonale
             n = 1; b = 0;
 
             for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] == cellBoard[i][j]; k++) n++; // backward check
             for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
-            
+
             for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] != cellBoard[i][j] && cellBoard[i-k][j-k] != CXCellState.FREE; k++) b++; // backward check
             for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] != cellBoard[i][j] && cellBoard[i+k][j+k] != CXCellState.FREE; k++) b++;
-            checktime();
 
-            if(b == B.X - 1) b1++;            
+            if(b == B.X - 1) b1++;
+            else if(b == B.X - 2) b2++;
 
             if(n == B.X - 1) n1++;
             else if(n == B.X - 2) n2++;
@@ -210,8 +214,9 @@ public class AFLP implements CXPlayer {
 
             for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] != cellBoard[i][j] && cellBoard[i-k][j+k] != CXCellState.FREE; k++) n++;
             for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] != cellBoard[i][j] && cellBoard[i+k][j-k] != CXCellState.FREE; k++) n++;
-            checktime();
+
             if(b == B.X - 1) b1++;
+            else if(b == B.X - 2) b2++;
 
             if(n == B.X - 1) n1++;
             else if(n == B.X - 2 ) n2++;
@@ -219,22 +224,21 @@ public class AFLP implements CXPlayer {
             else if(n == B.X - 4 && B.X > 7) n4++;
 
             if(j - (B.X - 1) >= 0 && j + (B.X - 1) < B.N)
-                plus = 2;
+                plus = 5;
             else plus = 0;
 
             //cambiare i seguenti punteggi per dare pesi diversi alle varie sequenze trovate
-            int score1 = 50;
-            int score2 = 20;
-            int score3 = 10;
-            int score4 = 5;
-            int scoreBlock1 = 150;   //blocco vittoria avversario
+            //int score1 = 50;
+            //int score2 = 20;
+            //int score3 = 10;
+            //int score4 = 5;
+            //int scoreBlock1 = 150;   //blocco vittoria avversario
 
-            return n1 * score1 + n2 * score2 + n3 * score3 + n4 * score4 + b1 * scoreBlock1 + plus;
+            return n1 * 50 + n2 * 30 + n3 * 10 + n4 * 5 + b1 * 100 + b2 * 40 + plus;
         }
     }
 
     private int evaluate(CXBoard B, CXCellState[][] board) throws TimeoutException {
-        checktime();
         if(B.gameState() == myWin)
             return 1000000;
         else if(B.gameState() == yourWin)
@@ -285,9 +289,9 @@ public class AFLP implements CXPlayer {
 
             for(int i = 0; i <= lastRow; i++)
             {
+                checktime();
                 for(int j = firstColumn; j <= lastColumn; j++)
                 {
-                    checktime();
                     //controllo orizzontale
                     boolean enter_check = true;
                     boolean condition1, condition2;
@@ -415,14 +419,15 @@ public class AFLP implements CXPlayer {
                         else n4--;
                     }
                 }
+                checktime();
             }
             //cambiare i seguenti punteggi per dare pesi diversi alle varie sequenze trovate
-            int score1 = 50;
-            int score2 = 20;
-            int score3 = 10;
-            int score4 = 5;
+            //int score1 = 50;
+            //int score2 = 20;
+            //int score3 = 10;
+            //int score4 = 5;
 
-            int eval = n1 * score1 + n2 * score2 + n3 * score3 + n4 * score4;
+            int eval = n1 * 50 + n2 * 20 + n3 * 10 + n4 * 5;
             hashtable.put(board.toString(), eval);
             return eval;
         }
@@ -452,11 +457,13 @@ public class AFLP implements CXPlayer {
 
         try {
             int depth;
-            if(B.X > 5){
+            if(B.X > 5)
                 depth = 5;
-            }
-            else depth = 15;
-            out = iterativeDeepening(B, isMaximizing, depth)[1];       
+            else if(B.N == 7)
+                depth = 14;
+            else
+                depth = 15;
+            out = iterativeDeepening(B, isMaximizing, depth)[1];
         }
         catch (TimeoutException e) {}
         return out;
