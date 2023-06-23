@@ -24,33 +24,24 @@ import connectx.CXGameState;
 import connectx.CXCell;
 import connectx.CXCellState;
 
-import java.util.TreeSet;
-import java.util.Random;
-import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.PriorityQueue;
+import java.util.concurrent.TimeoutException;
 
 public class AFLP implements CXPlayer {
-    private Random rand;
     private CXGameState myWin;
     private CXGameState yourWin;
     private CXCellState maximizingCellState;
     private boolean isMaximizing;
     private int  TIMEOUT;
     private long START;
-
-
     private Hashtable<String, Integer> hashtable = new Hashtable<>();
-
 
     /* Default empty constructor */
     public AFLP() { }
 
     public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
         // New random seed for each game
-        rand    = new Random(System.currentTimeMillis());
         myWin   = first ? CXGameState.WINP1 : CXGameState.WINP2;
         yourWin = first ? CXGameState.WINP2 : CXGameState.WINP1;
         maximizingCellState = first ? CXCellState.P1 : CXCellState.P2;
@@ -84,16 +75,7 @@ public class AFLP implements CXPlayer {
             int c = 0;
 
             for(int i : B.getAvailableColumns()){
-                B.markColumn(i);/*
-                CXCellState[][] board = B.getBoard();
-                if(hashtable.containsKey(board)){
-                    eval[c] = hashtable.get(board);
-                    System.out.println("Hash-valuated.");
-                }
-                else{
-                    eval[c] = evalMove(B);
-                    hashtable.put(board, eval[c]);
-                }*/
+                B.markColumn(i);
                 eval[c] = evalMove(B);
                 B.unmarkColumn();
                 c++;
@@ -132,16 +114,7 @@ public class AFLP implements CXPlayer {
             int c = 0;
 
             for(int i : B.getAvailableColumns()){
-                B.markColumn(i);/*
-                CXCellState[][] board = B.getBoard();
-                if(hashtable.containsKey(board)){
-                    eval[c] = hashtable.get(board);
-                    System.out.println("Hash-valuated.");
-                }
-                else{
-                    eval[c] = evalMove(B);
-                    hashtable.put(board, eval[c]);
-                }*/
+                B.markColumn(i);
                 eval[c] = evalMove(B);
                 B.unmarkColumn();
                 c++;
@@ -196,26 +169,10 @@ public class AFLP implements CXPlayer {
 
             if(b == B.X - 1) b1++;
 
-            if(n == B.X - 1){
-                //if(cellBoard[i][j] == maximizingCellState) n1++;
-                //else n1--;
-                n1++;
-            }
-            else if(n == B.X - 2){
-                //if(cellBoard[i][j] == maximizingCellState) n2++;
-                //else n2--;
-                n2++;
-            }
-            else if(n == B.X - 3 && B.X > 5){
-                //if(cellBoard[i][j] == maximizingCellState) n3++;
-                //else n3--;
-                n3++;
-            }
-            else if(n == B.X - 4 && B.X > 7){
-                //if(cellBoard[i][j] == maximizingCellState) n4++;
-                //else n4--;for(k = 1; j+k < B.N && cellBoard[i][j+k] != cellBoard[i][j] && cellBoard[i][j-k] != CXCellState.FREE ; k++) b++;
-                n4++;
-            }
+            if(n == B.X - 1) n1++;
+            else if(n == B.X - 2) n2++;
+            else if(n == B.X - 3 && B.X > 5) n3++;
+            else if(n == B.X - 4 && B.X > 7) n4++;
 
             //controllo verticale
             n = 1; b = 0;
@@ -224,26 +181,10 @@ public class AFLP implements CXPlayer {
 
             if(b == B.X - 1) b1++;
 
-            if(n == B.X - 1){
-                //if(cellBoard[i][j] == maximizingCellState) n1++;
-                //else n1--;
-                n1++;
-            }
-            else if(n == B.X - 2){
-                //if(cellBoard[i][j] == maximizingCellState) n2++;
-                //else n2--;
-                n2++;
-            }
-            else if(n == B.X - 3 && B.X > 5){
-                //if(cellBoard[i][j] == maximizingCellState) n3++;
-                //else n3--;
-                n3++;
-            }
-            else if(n == B.X - 4 && B.X > 7){
-                //if(cellBoard[i][j] == maximizingCellState) n4++;
-                //else n4--;
-                n4++;
-            }
+            if(n == B.X - 1) n1++;
+            else if(n == B.X - 2) n2++;
+            else if(n == B.X - 3 && B.X > 5) n3++;
+            else if(n == B.X - 4 && B.X > 7) n4++;
 
             //controllo diagonale
             n = 1; b = 0;
@@ -255,26 +196,10 @@ public class AFLP implements CXPlayer {
             for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] != cellBoard[i][j] && cellBoard[i+k][j+k] != CXCellState.FREE; k++) b++;
 
 
-            if(n == B.X - 1){
-                //if(cellBoard[i][j] == maximizingCellState) n1++;
-                //else n1--;
-                n1++;
-            }
-            else if(n == B.X - 2){
-                //if(cellBoard[i][j] == maximizingCellState) n2++;
-                //else n2--;
-                n2++;
-            }
-            else if(n == B.X - 3 && B.X > 5){
-                //if(cellBoard[i][j] == maximizingCellState) n3++;
-                //else n3--;
-                n3++;
-            }
-            else if(n == B.X - 4 && B.X > 7){
-                //if(cellBoard[i][j] == maximizingCellState) n4++;
-                //else n4--;
-                n4++;
-            }
+            if(n == B.X - 1) n1++;
+            else if(n == B.X - 2) n2++;
+            else if(n == B.X - 3 && B.X > 5) n3++;
+            else if(n == B.X - 4 && B.X > 7) n4++;
 
 
             //controllo anti-diagonale  (destra - sinistra /basso - alto)
@@ -287,26 +212,10 @@ public class AFLP implements CXPlayer {
 
             if(b == B.X - 1) b1++;
 
-            if(n == B.X - 1){
-                //if(cellBoard[i][j] == maximizingCellState) n1++;
-                //else n1--;
-                n1++;
-            }
-            else if(n == B.X - 2 ){
-                //if(cellBoard[i][j] == maximizingCellState) n2++;
-                //else n2--;
-                n2++;
-            }
-            else if(n == B.X - 3 && B.X > 5){
-                //if(cellBoard[i][j] == maximizingCellState) n3++;
-                //else n3--;
-                n3++;
-            }
-            else if(n == B.X - 4 && B.X > 7){
-                //if(cellBoard[i][j] == maximizingCellState) n4++;
-                //else n4--;
-                n4++;
-            }
+            if(n == B.X - 1) n1++;
+            else if(n == B.X - 2 ) n2++;
+            else if(n == B.X - 3 && B.X > 5) n3++;
+            else if(n == B.X - 4 && B.X > 7) n4++;
 
             if(j - (B.X - 1) >= 0 && j + (B.X - 1) < B.N)
                 plus = 2;
@@ -520,33 +429,8 @@ public class AFLP implements CXPlayer {
         }
     }
 
-    //il costo computazionale e' dettato dal primo for, ossia viene chiamata una offer per n volte
-    //la offer ha costo log(n), quindi il costo complessivo e' O(nlogn), il medesimo dell'omonimo
-    //algoritmo di ordinamento
-
-    //offer corrisponde al costo computazionale di una insert (O(log(n))
-    //poll corrisponde a una findMax + una deleteMax, ossia (O(1)) + O(log(n)) = O(log(n))
-
-    /*
-    private int[] heapsort(CXBoard B, int eval[]) throws TimeoutException{
-        int len = B.getAvailableColumns().length;
-        PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
-        int[] columns = new int[len];
-
-        checktime();
-        for(int i = 0; i < len; i++)
-            priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
-
-        for(int i = 0; i < len; i++)
-            columns[i] = priorityQueue.poll().second;
-
-        return columns;
-    }*/
-
     private int[] iterativeDeepening(CXBoard B, boolean isMax, int depth) throws TimeoutException  {
         int[] pair = new int[2];
-        //pair[0] = 0;
-        //pair[1] = B.getAvailableColumns()[0];
         int alpha = -1000000, beta = 1000000;
         try{
             for(int i = 1; i < depth; i++){
