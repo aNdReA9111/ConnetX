@@ -35,13 +35,13 @@ public class AFLP implements CXPlayer {
     private boolean isMaximizing;
     private int  TIMEOUT;
     private long START;
-    private Hashtable<String, Integer> hashtable = new Hashtable<>(3^(40*8), 0.75f);
+    //private Hashtable<String, Integer> hashtable = new Hashtable<>(3^(40*8), 0.75f);
+    private Hashtable<String, Integer> hashtable = new Hashtable<>();
 
     /* Default empty constructor */
     public AFLP() { }
 
     public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
-        // New random seed for each game
         myWin   = first ? CXGameState.WINP1 : CXGameState.WINP2;
         yourWin = first ? CXGameState.WINP2 : CXGameState.WINP1;
         maximizingCellState = first ? CXCellState.P1 : CXCellState.P2;
@@ -77,7 +77,6 @@ public class AFLP implements CXPlayer {
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
                 eval[c] = evalMove(B);
-                checktime();
                 B.unmarkColumn();
                 c++;
             }
@@ -117,7 +116,6 @@ public class AFLP implements CXPlayer {
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
                 eval[c] = evalMove(B);
-                checktime();
                 B.unmarkColumn();
                 c++;
             }
@@ -192,10 +190,12 @@ public class AFLP implements CXPlayer {
 
             for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] == cellBoard[i][j]; k++) n++; // backward check
             for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
-            checktime();
+            
             for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] != cellBoard[i][j] && cellBoard[i-k][j-k] != CXCellState.FREE; k++) b++; // backward check
             for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] != cellBoard[i][j] && cellBoard[i+k][j+k] != CXCellState.FREE; k++) b++;
+            checktime();
 
+            if(b == B.X - 1) b1++;            
 
             if(n == B.X - 1) n1++;
             else if(n == B.X - 2) n2++;
@@ -234,7 +234,7 @@ public class AFLP implements CXPlayer {
     }
 
     private int evaluate(CXBoard B, CXCellState[][] board) throws TimeoutException {
-
+        checktime();
         if(B.gameState() == myWin)
             return 1000000;
         else if(B.gameState() == yourWin)
@@ -383,8 +383,6 @@ public class AFLP implements CXPlayer {
                         if(board[i][j] == maximizingCellState) n4++;
                         else n4--;
                     }
-
-                    checktime();
                     //controllo anti-diagonale  (destra - sinistra /basso - alto)
                     enter_check = true;
                     condition1 = false;
@@ -452,7 +450,14 @@ public class AFLP implements CXPlayer {
         START = System.currentTimeMillis(); // Save starting time
 		int out = 0;
 
-        try {   out = iterativeDeepening(B, isMaximizing, 8)[1];       }
+        try {
+            int depth;
+            if(B.X > 5){
+                depth = 5;
+            }
+            else depth = 15;
+            out = iterativeDeepening(B, isMaximizing, depth)[1];       
+        }
         catch (TimeoutException e) {}
         return out;
     }
