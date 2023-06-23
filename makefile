@@ -1,8 +1,8 @@
-ROUND=10
+ROUND=1
 TIME=10
-M=6
-N=7
-X=4
+M=20
+N=20
+X=10
 
 CORE=1
 

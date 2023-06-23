@@ -16,38 +16,39 @@
  *  GNU General Public License for more details; see <https://www.gnu.org/licenses/>.
  */
 
- package connectx.AFLP;
+package connectx.AFLP;
 
- import connectx.CXPlayer;
- import connectx.CXBoard;
- import connectx.CXGameState;
- import connectx.CXCell;
- import connectx.CXCellState;
+import connectx.CXPlayer;
+import connectx.CXBoard;
+import connectx.CXGameState;
+import connectx.CXCell;
+import connectx.CXCellState;
 
- import java.util.TreeSet;
- import java.util.Random;
- import java.util.Arrays;
+import java.util.TreeSet;
+import java.util.Random;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.concurrent.ExecutionException;
- import java.util.concurrent.TimeoutException;
- import java.util.PriorityQueue;
+import java.util.concurrent.TimeoutException;
+import java.util.PriorityQueue;
 
- public class AFLP implements CXPlayer {
-     private Random rand;
-     private CXGameState myWin;
-     private CXGameState yourWin;
-     private CXCellState maximizingCellState;
-     private boolean isMaximizing;
-     private int  TIMEOUT;
-     private long START;
-
-     private Hashtable<CXBoard, Integer> hashtable = new Hashtable<>();
+public class AFLP implements CXPlayer {
+    private Random rand;
+    private CXGameState myWin;
+    private CXGameState yourWin;
+    private CXCellState maximizingCellState;
+    private boolean isMaximizing;
+    private int  TIMEOUT;
+    private long START;
 
 
-     /* Default empty constructor */
-     public AFLP() { }
+    //private Hashtable<CXCellState[][], Integer> hashtable = new Hashtable<>(500000);
 
-     public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
+
+    /* Default empty constructor */
+    public AFLP() { }
+
+    public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
         // New random seed for each game
         rand    = new Random(System.currentTimeMillis());
         myWin   = first ? CXGameState.WINP1 : CXGameState.WINP2;
@@ -55,7 +56,7 @@ import java.util.concurrent.ExecutionException;
         maximizingCellState = first ? CXCellState.P1 : CXCellState.P2;
         isMaximizing = true;
         TIMEOUT = timeout_in_secs;
-     }
+    }
 
     private void checktime() throws TimeoutException {
 		if ((System.currentTimeMillis() - START) / 1000.0 >= TIMEOUT * (99.0 / 100.0))
@@ -70,7 +71,7 @@ import java.util.concurrent.ExecutionException;
         int[] pair = new int[2];
         checktime();
         if(depth == 0 || B.gameState() != CXGameState.OPEN){
-            pair[0] = evaluate(B);  pair[1] = B.getLastMove().j;
+            pair[0] = evaluate(B, B.getBoard());  pair[1] = B.getLastMove().j;
             return pair;
         }
         else if(isMax){
@@ -83,13 +84,17 @@ import java.util.concurrent.ExecutionException;
             int c = 0;
 
             for(int i : B.getAvailableColumns()){
-                B.markColumn(i);
-                if(hashtable.containsKey(B))
-                    eval[c] = hashtable.get(B);
-                else{
-                    eval[c] = evaluate(B);
-                    hashtable.put(B, eval[c]);
+                B.markColumn(i);/*
+                CXCellState[][] board = B.getBoard();
+                if(hashtable.containsKey(board)){
+                    eval[c] = hashtable.get(board);
+                    System.out.println("Hash-valuated.");
                 }
+                else{
+                    eval[c] = evalMove(B);
+                    hashtable.put(board, eval[c]);
+                }*/
+                eval[c] = evalMove(B);
                 B.unmarkColumn();
                 c++;
             }
@@ -127,13 +132,17 @@ import java.util.concurrent.ExecutionException;
             int c = 0;
 
             for(int i : B.getAvailableColumns()){
-                B.markColumn(i);
-                if(hashtable.containsKey(B))
-                    eval[c] = hashtable.get(B);
-                else{
-                    eval[c] = evaluate(B);
-                    hashtable.put(B, eval[c]);
+                B.markColumn(i);/*
+                CXCellState[][] board = B.getBoard();
+                if(hashtable.containsKey(board)){
+                    eval[c] = hashtable.get(board);
+                    System.out.println("Hash-valuated.");
                 }
+                else{
+                    eval[c] = evalMove(B);
+                    hashtable.put(board, eval[c]);
+                }*/
+                eval[c] = evalMove(B);
                 B.unmarkColumn();
                 c++;
             }
@@ -165,26 +174,164 @@ import java.util.concurrent.ExecutionException;
         }
     }
 
-    private int evalMove(CXBoard B){
-        int eval = 0;
+    private int evalMove(CXBoard B) throws TimeoutException{
         CXCell C = B.getLastMove();
         CXCellState[][] cellBoard = B.getBoard();
-        int i = C.i, j = C.j;
+        int i = C.i, j = C.j, b = 0, n = 1, n1 = 1, n2 = 1, n3 = 1, n4 = 1, b1 = 1;
+        checktime();
+
+        if(B.gameState() == myWin)
+            return 1000;
+        else if(B.gameState() == yourWin)
+            return 1000;
+        else if(B.gameState() == CXGameState.DRAW)
+            return 0;
+        else {    //controllo orizzontale
+            int k;
+            for (k = 1; j-k >= 0 && cellBoard[i][j-k] == cellBoard[i][j]; k++) n++;
+            for(k = 1; j+k < B.N && cellBoard[i][j+k] == cellBoard[i][j]; k++) n++;
+
+            for (k = 1; j-k >= 0 && cellBoard[i][j-k] != cellBoard[i][j] && cellBoard[i][j-k] != CXCellState.FREE ; k++) b++;
+            for(k = 1; j+k < B.N && cellBoard[i][j+k] != cellBoard[i][j] && cellBoard[i][j+k] != CXCellState.FREE ; k++) b++;
+
+            if(b == B.X - 1) b1++;
+
+            if(n == B.X - 1){
+                //if(cellBoard[i][j] == maximizingCellState) n1++;
+                //else n1--;
+                n1++;
+            }
+            else if(n == B.X - 2){
+                //if(cellBoard[i][j] == maximizingCellState) n2++;
+                //else n2--;
+                n2++;
+            }
+            else if(n == B.X - 3 && B.X > 5){
+                //if(cellBoard[i][j] == maximizingCellState) n3++;
+                //else n3--;
+                n3++;
+            }
+            else if(n == B.X - 4 && B.X > 7){
+                //if(cellBoard[i][j] == maximizingCellState) n4++;
+                //else n4--;for(k = 1; j+k < B.N && cellBoard[i][j+k] != cellBoard[i][j] && cellBoard[i][j-k] != CXCellState.FREE ; k++) b++;
+                n4++;
+            }
+
+            //controllo verticale
+            n = 1; b = 0;
+            for(k = 1; i+k < B.M && cellBoard[i+k][j] == cellBoard[i][j]; k++) n++;
+            for(k = 1; i+k < B.M && cellBoard[i+k][j] != cellBoard[i][j] && cellBoard[i+k][j] != CXCellState.FREE ; k++) b++;
+
+            if(b == B.X - 1) b1++;
+
+            if(n == B.X - 1){
+                //if(cellBoard[i][j] == maximizingCellState) n1++;
+                //else n1--;
+                n1++;
+            }
+            else if(n == B.X - 2){
+                //if(cellBoard[i][j] == maximizingCellState) n2++;
+                //else n2--;
+                n2++;
+            }
+            else if(n == B.X - 3 && B.X > 5){
+                //if(cellBoard[i][j] == maximizingCellState) n3++;
+                //else n3--;
+                n3++;
+            }
+            else if(n == B.X - 4 && B.X > 7){
+                //if(cellBoard[i][j] == maximizingCellState) n4++;
+                //else n4--;
+                n4++;
+            }
+
+            //controllo diagonale
+            n = 1; b = 0;
+
+            for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] == cellBoard[i][j]; k++) n++; // backward check
+            for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
+
+            for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] != cellBoard[i][j] && cellBoard[i-k][j-k] != CXCellState.FREE; k++) b++; // backward check
+            for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] != cellBoard[i][j] && cellBoard[i+k][j+k] != CXCellState.FREE; k++) b++;
 
 
+            if(n == B.X - 1){
+                //if(cellBoard[i][j] == maximizingCellState) n1++;
+                //else n1--;
+                n1++;
+            }
+            else if(n == B.X - 2){
+                //if(cellBoard[i][j] == maximizingCellState) n2++;
+                //else n2--;
+                n2++;
+            }
+            else if(n == B.X - 3 && B.X > 5){
+                //if(cellBoard[i][j] == maximizingCellState) n3++;
+                //else n3--;
+                n3++;
+            }
+            else if(n == B.X - 4 && B.X > 7){
+                //if(cellBoard[i][j] == maximizingCellState) n4++;
+                //else n4--;
+                n4++;
+            }
 
 
-        return eval;
+            //controllo anti-diagonale  (destra - sinistra /basso - alto)
+            n = 1; b = 0;
+            for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] == cellBoard[i][j]; k++) n++;
+            for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] == cellBoard[i][j]; k++) n++;
+
+            for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] != cellBoard[i][j] && cellBoard[i-k][j+k] != CXCellState.FREE; k++) n++;
+            for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] != cellBoard[i][j] && cellBoard[i+k][j-k] != CXCellState.FREE; k++) n++;
+
+            if(b == B.X - 1) b1++;
+
+            if(n == B.X - 1){
+                //if(cellBoard[i][j] == maximizingCellState) n1++;
+                //else n1--;
+                n1++;
+            }
+            else if(n == B.X - 2 ){
+                //if(cellBoard[i][j] == maximizingCellState) n2++;
+                //else n2--;
+                n2++;
+            }
+            else if(n == B.X - 3 && B.X > 5){
+                //if(cellBoard[i][j] == maximizingCellState) n3++;
+                //else n3--;
+                n3++;
+            }
+            else if(n == B.X - 4 && B.X > 7){
+                //if(cellBoard[i][j] == maximizingCellState) n4++;
+                //else n4--;
+                n4++;
+            }
+
+            //cambiare i seguenti punteggi per dare pesi diversi alle varie sequenze trovate
+            int score1 = 50;
+            int score2 = 20;
+            int score3 = 10;
+            int score4 = 5;
+            int scoreBlock1 = 150;   //blocco vittoria avversario
+
+            return n1 * score1 + n2 * score2 + n3 * score3 + n4 * score4 + b1 * scoreBlock1;
+        }
     }
 
-    private int evaluate(CXBoard B) throws TimeoutException {
+    private int evaluate(CXBoard B, CXCellState[][] board) throws TimeoutException {
+
         if(B.gameState() == myWin)
             return 1000000;
         else if(B.gameState() == yourWin)
             return -1000000;
         else if(B.gameState() == CXGameState.DRAW)
             return 0;
-        else {
+        /*else if(hashtable.containsKey(board)){
+            System.err.println("Hashtable");
+            return hashtable.get(board);
+        }*/
+        else{
             //valutazione euristica di una situazione di gioco non finale
             // nell'eval assegno punteggi positivi per le sequenze di pedine del player massimizzante
             // e negativi per il minimizzante
@@ -192,7 +339,6 @@ import java.util.concurrent.ExecutionException;
             //CXCellState s = B[i][j];
             int n = 0;
             int n1 = 0,n2 = 0, n3 = 0, n4 = 0; //n1 = numero di sequenze di lunghezza X-1, X-2 per n2, X-3 per n3, X-4 per n4
-            CXCellState[][] cellBoard = B.getBoard();
 
             //Ottimizzo gli indici --> da fare
             //i = 0...ultima riga con pedina
@@ -200,13 +346,13 @@ import java.util.concurrent.ExecutionException;
             int firstColumn = 0, lastColumn = B.N - 1; int lastRow = 0;
 
             for(int j = 0 ; j < B.N ; j++){
-                if(cellBoard[0][j] != CXCellState.FREE)
+                if(board[0][j] != CXCellState.FREE)
                     break;
                 else firstColumn++;
             }
 
             for(int j = B.N - 1 ; j >= 0 ; j--){
-                if(cellBoard[0][j] != CXCellState.FREE)
+                if(board[0][j] != CXCellState.FREE)
                     break;
                 else lastColumn--;
             }
@@ -218,7 +364,7 @@ import java.util.concurrent.ExecutionException;
                 }
                 else{
                     int i;
-                    for(i = 0; i < B.M && cellBoard[i][j] != CXCellState.FREE; i++){}
+                    for(i = 0; i < B.M && board[i][j] != CXCellState.FREE; i++){}
                     if((i-1) > lastRow)
                         lastRow = (i-1);
                 }
@@ -235,29 +381,29 @@ import java.util.concurrent.ExecutionException;
                     int k;
                     n = 1;
                     if(j-1 >= 0){
-                        enter_check = (cellBoard[i][j-1] != cellBoard[i][j]);
-                        condition1 = (cellBoard[i][j-1] == CXCellState.FREE);
+                        enter_check = (board[i][j-1] != board[i][j]);
+                        condition1 = (board[i][j-1] == CXCellState.FREE);
                     }
                     else condition1 = false;
-                    for(k = 1; enter_check && j+k < B.N && cellBoard[i][j+k] == cellBoard[i][j]; k++) n++;
+                    for(k = 1; enter_check && j+k < B.N && board[i][j+k] == board[i][j]; k++) n++;
                     if(j+k >= B.N){
                         condition2 = false;
                     }
-                    else condition2 = (cellBoard[i][j+k] == CXCellState.FREE);
+                    else condition2 = (board[i][j+k] == CXCellState.FREE);
                     if(n == B.X - 1 && (condition1 || condition2)){
-                        if(cellBoard[i][j] == maximizingCellState) n1++;
+                        if(board[i][j] == maximizingCellState) n1++;
                         else n1--;
                     }
                     else if(n == B.X - 2 && (condition1 || condition2)){
-                        if(cellBoard[i][j] == maximizingCellState) n1++;
+                        if(board[i][j] == maximizingCellState) n2++;
                         else n2--;
                     }
                     else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
-                        if(cellBoard[i][j] == maximizingCellState) n1++;
+                        if(board[i][j] == maximizingCellState) n3++;
                         else n3--;
                     }
                     else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
-                        if(cellBoard[i][j] == maximizingCellState) n1++;
+                        if(board[i][j] == maximizingCellState) n4++;
                         else n4--;
                     }
 
@@ -267,29 +413,29 @@ import java.util.concurrent.ExecutionException;
                     condition2 = false;
                     n = 1;
                     if(i-1 >= 0){
-                        enter_check = (cellBoard[i-1][j] != cellBoard[i][j]);
-                        condition1 = (cellBoard[i-1][j] == CXCellState.FREE);
+                        enter_check = (board[i-1][j] != board[i][j]);
+                        condition1 = (board[i-1][j] == CXCellState.FREE);
                     }
                     else condition1 = false;
-                    for(k = 1; enter_check && i+k < B.M && cellBoard[i+k][j] == cellBoard[i][j]; k++) n++;
+                    for(k = 1; enter_check && i+k < B.M && board[i+k][j] == board[i][j]; k++) n++;
                     if(i+k >= B.M) {
                         condition2 = false;
                     }
-                    else condition2 = (cellBoard[i+k][j] == CXCellState.FREE);
+                    else condition2 = (board[i+k][j] == CXCellState.FREE);
                     if(n == B.X - 1 && (condition1 || condition2)){
-                        if(cellBoard[i][j] == maximizingCellState) n1++;
+                        if(board[i][j] == maximizingCellState) n1++;
                         else n1--;
                     }
                     else if(n == B.X - 2 && (condition1 || condition2)){
-                        if(cellBoard[i][j] == maximizingCellState) n2++;
+                        if(board[i][j] == maximizingCellState) n2++;
                         else n2--;
                     }
                     else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
-                        if(cellBoard[i][j] == maximizingCellState) n3++;
+                        if(board[i][j] == maximizingCellState) n3++;
                         else n3--;
                     }
                     else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
-                        if(cellBoard[i][j] == maximizingCellState) n4++;
+                        if(board[i][j] == maximizingCellState) n4++;
                         else n4--;
                     }
 
@@ -299,29 +445,29 @@ import java.util.concurrent.ExecutionException;
                     condition2 = false;
                     n = 1;
                     if(i-1 >= 0 && j-1 >= 0){
-                        enter_check = (cellBoard[i-1][j-1] != cellBoard[i][j]);
-                        condition1 = (cellBoard[i-1][j-1] == CXCellState.FREE);
+                        enter_check = (board[i-1][j-1] != board[i][j]);
+                        condition1 = (board[i-1][j-1] == CXCellState.FREE);
                     }
                     else condition1 = false;
-                    for(k = 1; enter_check && (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
+                    for(k = 1; enter_check && (i+k < B.M  && j+k < B.N ) && board[i+k][j+k] == board[i][j]; k++) n++;
                     if(i+k >= B.M || j+k >= B.N) {
                         condition2 = false;
                     }
-                    else condition2 = (cellBoard[i+k][j+k] == CXCellState.FREE);
+                    else condition2 = (board[i+k][j+k] == CXCellState.FREE);
                     if(n == B.X - 1 && (condition1 || condition2)){
-                        if(cellBoard[i][j] == maximizingCellState) n1++;
+                        if(board[i][j] == maximizingCellState) n1++;
                         else n1--;
                     }
                     else if(n == B.X - 2 && (condition1 || condition2)){
-                        if(cellBoard[i][j] == maximizingCellState) n2++;
+                        if(board[i][j] == maximizingCellState) n2++;
                         else n2--;
                     }
                     else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
-                        if(cellBoard[i][j] == maximizingCellState) n3++;
+                        if(board[i][j] == maximizingCellState) n3++;
                         else n3--;
                     }
                     else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
-                        if(cellBoard[i][j] == maximizingCellState) n4++;
+                        if(board[i][j] == maximizingCellState) n4++;
                         else n4--;
                     }
 
@@ -332,29 +478,29 @@ import java.util.concurrent.ExecutionException;
                     condition2 = false;
                     n = 1;
                     if(i-1 >= 0 && j+1 < B.N){
-                        enter_check = (cellBoard[i-1][j+1] != cellBoard[i][j]);
-                        condition1 = (cellBoard[i-1][j+1] == CXCellState.FREE);
+                        enter_check = (board[i-1][j+1] != board[i][j]);
+                        condition1 = (board[i-1][j+1] == CXCellState.FREE);
                     }
                     else condition1 = false;
-                    for(k = 1; enter_check && (i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] == cellBoard[i][j]; k++) n++;
+                    for(k = 1; enter_check && (i+k < B.M  && j-k >= 0) && board[i+k][j-k] == board[i][j]; k++) n++;
                     if(i+k >= B.M || j-k < 0) {
                         condition2 = false;
                     }
-                    else condition2 = (cellBoard[i+k][j-k] == CXCellState.FREE);
+                    else condition2 = (board[i+k][j-k] == CXCellState.FREE);
                     if(n == B.X - 1 && (condition1 || condition2)){
-                        if(cellBoard[i][j] == maximizingCellState) n1++;
+                        if(board[i][j] == maximizingCellState) n1++;
                         else n1--;
                     }
                     else if(n == B.X - 2 && (condition1 || condition2)){
-                        if(cellBoard[i][j] == maximizingCellState) n2++;
+                        if(board[i][j] == maximizingCellState) n2++;
                         else n2--;
                     }
                     else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
-                        if(cellBoard[i][j] == maximizingCellState) n3++;
+                        if(board[i][j] == maximizingCellState) n3++;
                         else n3--;
                     }
                     else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
-                        if(cellBoard[i][j] == maximizingCellState) n4++;
+                        if(board[i][j] == maximizingCellState) n4++;
                         else n4--;
                     }
                 }
@@ -366,120 +512,9 @@ import java.util.concurrent.ExecutionException;
             int score4 = 5;
 
             int eval = n1 * score1 + n2 * score2 + n3 * score3 + n4 * score4;
+            //hashtable.put(board, eval);
             return eval;
         }
-    }
-
-    int[] evalColumns(CXBoard B, boolean isMax) throws TimeoutException {
-        Integer[] availableColumns = B.getAvailableColumns();
-        int[] eval = new int[availableColumns.length];
-
-        for(int k = 0; k < availableColumns.length; k++){
-            checktime();
-
-            CXGameState state = B.markColumn(availableColumns[k]);
-            CXCellState [][] cellBoard = B.getBoard();
-            int n;
-            //valuto la colonna
-
-            if(state == myWin)              eval[k] =  1000;
-            else if(state == yourWin)       eval[k] = -1000;
-            else if(state == CXGameState.DRAW) eval[k] = 0;
-            else {    //caso generale
-                //prendo le "coordinate" dell'ultima mossa effettuata
-                int i = B.getLastMove().i, j = B.getLastMove().j;
-
-                ////////////////caso orizzontale
-                n = 1;
-                int l = 1, r = 1, countFree = 0;
-
-                //calcolo le celle con la stessa pedina del player massimizzante contigue
-                for (l = 1; j-l >= 0 && cellBoard[i][j-l] == cellBoard[i][j]; l++) n++; // controllo all'indietro
-                for (r = 1; j+r <  B.N && cellBoard[i][j+r] == cellBoard[i][j]; r++) n++; // controllo in avanti
-
-                //calcolo le celle libere adiacenti a quelle della pedina massimizzante
-                for(int p = j-l; p >= 0 && (cellBoard[i][j] == cellBoard[i][p] || cellBoard[i][p] == CXCellState.FREE) && p >= 0; p--)// controllo all'indietro
-                {
-                    if(cellBoard[i][j] == cellBoard[i][p] )
-                        n++;
-                    else countFree++;
-                } // controllo in avanti
-                for(int p = j+r; p < B.N && (cellBoard[i][j] == cellBoard[i][p] || cellBoard[i][p] == CXCellState.FREE); p++)
-                {
-                    if(cellBoard[i][j] == cellBoard[i][p] )
-                        n++;
-                    else countFree++;
-                } // controllo in avanti
-
-                //se nelle celle contigue è possbile arrivare a una sequenza vincente assegno il valore a questa mossa
-                if(n >= B.X)    n = B.X - 1;
-                if(countFree + n >= B.X)    eval[k] += n;
-
-
-                ////////////////caso verticale
-                n = 1;
-                for (l = 1; i-l >= 0 && cellBoard[i][j] == cellBoard[i-l][j]; l++) n++;     // controllo all'indietro
-
-                //vedo in alto quante altre celle sono libere
-                countFree = B.M - i - 1;                                                    // controllo in avanti
-
-                //se nelle celle contigue è possbile arrivare a una sequenza vincente assegno il valore a questa mossa
-                if(countFree + n >= B.X)    eval[k] += n;
-
-
-                ////////////////caso diagonale
-                n = 1; countFree = 0;
-                for (l = 1; i-l >= 0 && j-l >= 0 && cellBoard[i-l][j-l] == cellBoard[i][j]; l++) n++; // controllo all'indietro
-                for (r = 1; i+r <  B.M && j+r <  B.N && cellBoard[i+r][j+r] == cellBoard[i][j]; l++) n++; // controllo in avanti
-
-                for (int p = l; i-p >= 0 && j-p >= 0 && (cellBoard[i][j] == cellBoard[i-p][j-p] || cellBoard[i-p][j-p] == CXCellState.FREE); p++) // controllo all'indietro
-                {
-                    if(cellBoard[i][j] == cellBoard[i-p][j-p] )
-                        n++;
-                    else countFree++;
-                }
-                for (int p = r; i+p <  B.M && j+p <  B.N && (cellBoard[i][j] == cellBoard[i+p][j+p] || cellBoard[i+p][j+p] == CXCellState.FREE); p++)  // controllo in avanti
-                {
-                    if(cellBoard[i][j] == cellBoard[i+p][j+p] )
-                        n++;
-                    else countFree++;
-
-                }
-
-                //se nelle celle contigue è possbile arrivare a una sequenza vincente assegno il valore a questa mossa
-                if(n >= B.X)    n = B.X - 1;
-                if(countFree + n >= B.X)    eval[k] += n;
-
-                ////////////////caso anti-diagonale
-                n = 1; countFree = 0;
-                for (l = 1; i-l >= 0  && j+l < B.N && cellBoard[i-l][j+l] == cellBoard[i][j]; l++) n++; // controllo all'indietro
-                for (r = 1; i+r <  B.M && j-r >= 0 && cellBoard[i+r][j-r] == cellBoard[i][j]; r++) n++; // controllo in avanti
-
-
-                for (int p = l; i-p >= 0   && j+p < B.N && (cellBoard[i][j] == cellBoard[i-p][j+p] || cellBoard[i-p][j+p] == CXCellState.FREE); p++)// controllo all'indietro
-                {
-                    if(cellBoard[i][j] == cellBoard[i-p][j+p] )
-                        n++;
-                    else countFree++;
-
-                }
-                for (int p = r; i+p < B.M  && j-p >=  0 && (cellBoard[i][j] == cellBoard[i+p][j-p] || cellBoard[i+p][j-p] == CXCellState.FREE); p++) // controllo in avanti
-                {
-                    if(cellBoard[i][j] == cellBoard[i+p][j-p] )
-                        n++;
-                    else countFree++;
-                }
-
-                //se nelle celle contigue è possbile arrivare a una sequenza vincente assegno il valore a questa mossa
-                if(n >= B.X)    n = B.X - 1;
-                if(countFree + n >= B.X)    eval[k] += n;
-            }
-            //vedo se si massimizza o meno
-            if(!isMax)
-                eval[k] *= -1;
-            B.unmarkColumn();
-        }
-        return eval;
     }
 
     //il costo computazionale e' dettato dal primo for, ossia viene chiamata una offer per n volte
@@ -531,8 +566,9 @@ import java.util.concurrent.ExecutionException;
 		Integer[] L = B.getAvailableColumns();
 		int out    = L[rand.nextInt(L.length)]; // Save a random column
 
-        try {   out = iterativeDeepening(B, isMaximizing, 10)[1];       }
+        try {   out = iterativeDeepening(B, isMaximizing, 7)[1];       }
         catch (TimeoutException e) {}
+        catch (ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
         return out;
     }
 }
