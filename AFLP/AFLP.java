@@ -36,6 +36,7 @@ public class AFLP implements CXPlayer {
     private int  TIMEOUT;
     private long START;
     private Hashtable<String, Integer> hashtable;
+    private int DEPTH;
 
     /* Default empty constructor */
     public AFLP() { }
@@ -50,7 +51,7 @@ public class AFLP implements CXPlayer {
     }
 
     private void checktime() throws TimeoutException {
-		if ((System.currentTimeMillis() - START + 40.0) / 1000.0 >= TIMEOUT * (99.0 / 100.0))
+		if ((System.currentTimeMillis() - START + 100.0) / 1000.0 >= TIMEOUT * (99.0 / 100.0))
 			throw new TimeoutException();
 	}
 
@@ -62,7 +63,7 @@ public class AFLP implements CXPlayer {
         int[] pair = new int[2];
 
         if(depth == 0 || B.gameState() != CXGameState.OPEN){
-            pair[0] = evaluate(B, B.getBoard());  pair[1] = B.getLastMove().j;
+            pair[0] = evaluate(B, B.getBoard()) - (DEPTH - depth);  pair[1] = B.getLastMove().j;
             return pair;
         }
         else if(isMax){
@@ -76,7 +77,7 @@ public class AFLP implements CXPlayer {
 
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
-                eval[c] = evalMove(B) + depth;
+                eval[c] = evalMove(B) - (DEPTH - depth)*2;
                 B.unmarkColumn();
                 c++;
             }
@@ -116,7 +117,7 @@ public class AFLP implements CXPlayer {
 
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
-                eval[c] = evalMove(B) + depth;
+                eval[c] = evalMove(B) - (DEPTH - depth)*2;
                 B.unmarkColumn();
                 c++;
             }
@@ -438,7 +439,7 @@ public class AFLP implements CXPlayer {
             }
         }
         catch (TimeoutException e) {
-            System.err.println("Tempo quasi finito, ritorno una scelta a profondità minore!");
+            //System.err.println("Tempo quasi finito, ritorno una scelta a profondità minore!");
             return pair;
         }
 
@@ -448,20 +449,11 @@ public class AFLP implements CXPlayer {
     @Override
     public int selectColumn(CXBoard B){
         START = System.currentTimeMillis(); // Save starting time
+        DEPTH = 100;
 		int out = 0;
 
         try {
-            /*int depth;
-            if(B.N < 7)
-                depth = 15;
-            else if(B.N == 7)
-                depth = 30;
-            else if(B.N > 20)
-                depth = 7;
-            else
-                depth = 5;
-            */
-            out = iterativeDeepening(B, isMaximizing, 100)[1];
+            out = iterativeDeepening(B, isMaximizing, DEPTH)[1];
         }
         catch (TimeoutException e) {}
         return out;
