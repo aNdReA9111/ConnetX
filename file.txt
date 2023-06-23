@@ -17,8 +17,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 5 4 4 connectx.L1.L1 connectx.AFLP.AFLP -t 10 -r 1
-L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
-AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
 echo "\n"
 
 
@@ -35,8 +35,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 7 4 4 connectx.AFLP.AFLP connectx.L1.L1 -t 10 -r 1
-AFLP Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
-L1 Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
 echo "\n"
 
 
@@ -53,8 +53,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 4 5 4 connectx.L1.L1 connectx.AFLP.AFLP -t 10 -r 1
-L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
-AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
 echo "\n"
 
 
@@ -71,8 +71,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 6 5 4 connectx.AFLP.AFLP connectx.L1.L1 -t 10 -r 1
-AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
-L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
 echo "\n"
 
 
@@ -83,8 +83,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 7 5 4 connectx.AFLP.AFLP connectx.L1.L1 -t 10 -r 1
-AFLP Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
-L1 Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
 echo "\n"
 
 
@@ -113,8 +113,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 5 6 4 connectx.L1.L1 connectx.AFLP.AFLP -t 10 -r 1
-L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
-AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
 echo "\n"
 
 
@@ -131,8 +131,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 7 6 4 connectx.AFLP.AFLP connectx.L1.L1 -t 10 -r 1
-AFLP Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
-L1 Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
 echo "\n"
 
 
@@ -239,14 +239,14 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 5 5 5 connectx.AFLP.AFLP connectx.L1.L1 -t 10 -r 1
-AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
-L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
 echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 5 5 5 connectx.L1.L1 connectx.AFLP.AFLP -t 10 -r 1
-L1 Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
-AFLP Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
 echo "\n"
 
 
@@ -287,8 +287,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 5 6 5 connectx.AFLP.AFLP connectx.L1.L1 -t 10 -r 1
-AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
-L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
 echo "\n"
 
 
@@ -305,8 +305,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 6 6 5 connectx.L1.L1 connectx.AFLP.AFLP -t 10 -r 1
-L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
-AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
 echo "\n"
 
 
@@ -317,8 +317,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 7 6 5 connectx.L1.L1 connectx.AFLP.AFLP -t 10 -r 1
-L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
-AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
 echo "\n"
 
 
@@ -341,8 +341,8 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 5 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t 10 -r 1
-L1 Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
-AFLP Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
 echo "\n"
 
 
@@ -353,17 +353,17 @@ echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 6 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t 10 -r 1
-L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
-AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
 echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 7 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t 10 -r 1
-AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
-L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
 echo "\n"
 
 
 java -XX:ParallelGCThreads=1 -cp ".." connectx.CXPlayerTester 7 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t 10 -r 1
-L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
-AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+L1 Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0
+AFLP Score: 1 Won: 0 Lost: 0 Draw: 1 Error: 0

@@ -42,7 +42,7 @@ public class AFLP implements CXPlayer {
     private long START;
 
 
-    //private Hashtable<CXCellState[][], Integer> hashtable = new Hashtable<>(500000);
+    private Hashtable<String, Integer> hashtable = new Hashtable<>();
 
 
     /* Default empty constructor */
@@ -187,7 +187,7 @@ public class AFLP implements CXPlayer {
         else if(B.gameState() == CXGameState.DRAW)
             return 0;
         else {    //controllo orizzontale
-            int k;
+            int k, plus;
             for (k = 1; j-k >= 0 && cellBoard[i][j-k] == cellBoard[i][j]; k++) n++;
             for(k = 1; j+k < B.N && cellBoard[i][j+k] == cellBoard[i][j]; k++) n++;
 
@@ -308,6 +308,10 @@ public class AFLP implements CXPlayer {
                 n4++;
             }
 
+            if(j - (B.X - 1) >= 0 && j + (B.X - 1) < B.N)
+                plus = 2;
+            else plus = 0;
+
             //cambiare i seguenti punteggi per dare pesi diversi alle varie sequenze trovate
             int score1 = 50;
             int score2 = 20;
@@ -315,7 +319,7 @@ public class AFLP implements CXPlayer {
             int score4 = 5;
             int scoreBlock1 = 150;   //blocco vittoria avversario
 
-            return n1 * score1 + n2 * score2 + n3 * score3 + n4 * score4 + b1 * scoreBlock1;
+            return n1 * score1 + n2 * score2 + n3 * score3 + n4 * score4 + b1 * scoreBlock1 + plus;
         }
     }
 
@@ -327,10 +331,9 @@ public class AFLP implements CXPlayer {
             return -1000000;
         else if(B.gameState() == CXGameState.DRAW)
             return 0;
-        /*else if(hashtable.containsKey(board)){
-            System.err.println("Hashtable");
-            return hashtable.get(board);
-        }*/
+        else if(hashtable.containsKey(board.toString())){
+            return hashtable.get(board.toString());
+        }
         else{
             //valutazione euristica di una situazione di gioco non finale
             // nell'eval assegno punteggi positivi per le sequenze di pedine del player massimizzante
@@ -512,7 +515,7 @@ public class AFLP implements CXPlayer {
             int score4 = 5;
 
             int eval = n1 * score1 + n2 * score2 + n3 * score3 + n4 * score4;
-            //hashtable.put(board, eval);
+            hashtable.put(board.toString(), eval);
             return eval;
         }
     }
@@ -562,13 +565,10 @@ public class AFLP implements CXPlayer {
     @Override
     public int selectColumn(CXBoard B){
         START = System.currentTimeMillis(); // Save starting time
+		int out = 0;
 
-		Integer[] L = B.getAvailableColumns();
-		int out    = L[rand.nextInt(L.length)]; // Save a random column
-
-        try {   out = iterativeDeepening(B, isMaximizing, 7)[1];       }
+        try {   out = iterativeDeepening(B, isMaximizing, 12)[1];       }
         catch (TimeoutException e) {}
-        catch (ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
         return out;
     }
 }
