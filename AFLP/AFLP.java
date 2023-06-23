@@ -35,7 +35,7 @@ public class AFLP implements CXPlayer {
     private boolean isMaximizing;
     private int  TIMEOUT;
     private long START;
-    private Hashtable<String, Integer> hashtable = new Hashtable<>();
+    private Hashtable<String, Integer> hashtable = new Hashtable<>(3^(40*8), 0.75f);
 
     /* Default empty constructor */
     public AFLP() { }
@@ -77,6 +77,7 @@ public class AFLP implements CXPlayer {
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
                 eval[c] = evalMove(B);
+                checktime();
                 B.unmarkColumn();
                 c++;
             }
@@ -88,7 +89,7 @@ public class AFLP implements CXPlayer {
             for(int i = 0; i < len; i++){
                 Pair p = priorityQueue.poll();
                 int col = p.second;
-
+                checktime();
                 B.markColumn(col);
                 int tmp = AlphaBeta_Pruning(B, false, alpha, beta, depth-1)[0];
                 if (pair[0] < tmp){
@@ -116,6 +117,7 @@ public class AFLP implements CXPlayer {
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
                 eval[c] = evalMove(B);
+                checktime();
                 B.unmarkColumn();
                 c++;
             }
@@ -128,7 +130,7 @@ public class AFLP implements CXPlayer {
             for(int i = 0; i < len; i++){
                 Pair p = priorityQueue.poll();
                 int col = p.second;
-
+                checktime();
                 B.markColumn(col);
                 int tmp = AlphaBeta_Pruning(B, true, alpha, beta, depth-1)[0];
                 if (pair[0] > tmp){
@@ -151,7 +153,6 @@ public class AFLP implements CXPlayer {
         CXCell C = B.getLastMove();
         CXCellState[][] cellBoard = B.getBoard();
         int i = C.i, j = C.j, b = 0, n = 1, n1 = 1, n2 = 1, n3 = 1, n4 = 1, b1 = 1;
-        checktime();
 
         if(B.gameState() == myWin)
             return 1000;
@@ -173,7 +174,7 @@ public class AFLP implements CXPlayer {
             else if(n == B.X - 2) n2++;
             else if(n == B.X - 3 && B.X > 5) n3++;
             else if(n == B.X - 4 && B.X > 7) n4++;
-
+            checktime();
             //controllo verticale
             n = 1; b = 0;
             for(k = 1; i+k < B.M && cellBoard[i+k][j] == cellBoard[i][j]; k++) n++;
@@ -191,7 +192,7 @@ public class AFLP implements CXPlayer {
 
             for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] == cellBoard[i][j]; k++) n++; // backward check
             for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
-
+            checktime();
             for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] != cellBoard[i][j] && cellBoard[i-k][j-k] != CXCellState.FREE; k++) b++; // backward check
             for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] != cellBoard[i][j] && cellBoard[i+k][j+k] != CXCellState.FREE; k++) b++;
 
@@ -209,7 +210,7 @@ public class AFLP implements CXPlayer {
 
             for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] != cellBoard[i][j] && cellBoard[i-k][j+k] != CXCellState.FREE; k++) n++;
             for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] != cellBoard[i][j] && cellBoard[i+k][j-k] != CXCellState.FREE; k++) n++;
-
+            checktime();
             if(b == B.X - 1) b1++;
 
             if(n == B.X - 1) n1++;
@@ -383,7 +384,7 @@ public class AFLP implements CXPlayer {
                         else n4--;
                     }
 
-
+                    checktime();
                     //controllo anti-diagonale  (destra - sinistra /basso - alto)
                     enter_check = true;
                     condition1 = false;
@@ -451,7 +452,7 @@ public class AFLP implements CXPlayer {
         START = System.currentTimeMillis(); // Save starting time
 		int out = 0;
 
-        try {   out = iterativeDeepening(B, isMaximizing, 12)[1];       }
+        try {   out = iterativeDeepening(B, isMaximizing, 8)[1];       }
         catch (TimeoutException e) {}
         return out;
     }
