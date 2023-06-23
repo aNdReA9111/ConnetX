@@ -1,8 +1,8 @@
-ROUND=5
-TIME=10
-M=7
-N=7
-X=5
+ROUND=1
+TIME=1
+M=50
+N=50
+X=10
 
 CORE=1
 
@@ -26,9 +26,11 @@ vsz:
 
 vpu:
 	java -cp ".." connectx.CXPlayerTester $(M) $(N) $(X) connectx.AFLP.AFLP connectx.L1.L1 -v -t $(TIME) -r $(ROUND)
+	say finito
 
 vsu:
 	java -cp ".." connectx.CXPlayerTester $(M) $(N) $(X) connectx.L1.L1 connectx.AFLP.AFLP -v -t $(TIME) -r $(ROUND)
+	say finito
 
 human:
 	  java -cp ".." connectx.CXGame 6 7 4 connectx.AFLP.AFLP
@@ -157,6 +159,7 @@ test:
 	java -cp ".." connectx.CXPlayerTester 7 7 5 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
 	echo "\n"
 	java -cp ".." connectx.CXPlayerTester 7 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
+	say finito
 
 full-test:
 	java -cp ".." connectx.CXPlayerTester 4 4 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1

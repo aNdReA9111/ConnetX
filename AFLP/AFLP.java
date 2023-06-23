@@ -50,7 +50,7 @@ public class AFLP implements CXPlayer {
     }
 
     private void checktime() throws TimeoutException {
-		if ((System.currentTimeMillis() - START) / 1000.0 >= TIMEOUT * (99.0 / 100.0))
+		if ((System.currentTimeMillis() - START + 40.0) / 1000.0 >= TIMEOUT * (99.0 / 100.0))
 			throw new TimeoutException();
 	}
 
@@ -76,7 +76,7 @@ public class AFLP implements CXPlayer {
 
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
-                eval[c] = evalMove(B);
+                eval[c] = evalMove(B) + depth;
                 B.unmarkColumn();
                 c++;
             }
@@ -116,7 +116,7 @@ public class AFLP implements CXPlayer {
 
             for(int i : B.getAvailableColumns()){
                 B.markColumn(i);
-                eval[c] = evalMove(B);
+                eval[c] = evalMove(B) + depth;
                 B.unmarkColumn();
                 c++;
             }
@@ -421,11 +421,6 @@ public class AFLP implements CXPlayer {
                 }
                 checktime();
             }
-            //cambiare i seguenti punteggi per dare pesi diversi alle varie sequenze trovate
-            //int score1 = 50;
-            //int score2 = 20;
-            //int score3 = 10;
-            //int score4 = 5;
 
             int eval = n1 * 50 + n2 * 20 + n3 * 10 + n4 * 5;
             hashtable.put(board.toString(), eval);
@@ -456,14 +451,17 @@ public class AFLP implements CXPlayer {
 		int out = 0;
 
         try {
-            int depth;
-            if(B.X > 5)
-                depth = 5;
-            else if(B.N == 7)
-                depth = 14;
-            else
+            /*int depth;
+            if(B.N < 7)
                 depth = 15;
-            out = iterativeDeepening(B, isMaximizing, depth)[1];
+            else if(B.N == 7)
+                depth = 30;
+            else if(B.N > 20)
+                depth = 7;
+            else
+                depth = 5;
+            */
+            out = iterativeDeepening(B, isMaximizing, 100)[1];
         }
         catch (TimeoutException e) {}
         return out;
