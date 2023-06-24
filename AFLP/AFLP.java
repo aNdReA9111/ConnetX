@@ -263,7 +263,6 @@ public class AFLP implements CXPlayer {
             boolean enter_check = true, condition1, condition2;
 
             try {
-                checktime();
                 for(CXCell c : markedCells)
                 {
                     i = c.i; j = c.j; n = 1;
@@ -325,6 +324,7 @@ public class AFLP implements CXPlayer {
                         if(board[i][j] == maximizingCellState) n4++;
                         else n4--;
                     }
+                    checktime();
                     //controllo diagonale
                     enter_check = true;
                     condition1 = false;
