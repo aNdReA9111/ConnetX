@@ -51,7 +51,7 @@ public class AFLP implements CXPlayer {
     }
 
     private void checktime() throws TimeoutException {
-		if ((System.currentTimeMillis() - START + 100.0) / 1000.0 >= TIMEOUT * (99.0 / 100.0))
+		if ((System.currentTimeMillis() - START) / 1000.0 >= TIMEOUT * (50 / 100.0))
 			throw new TimeoutException();
 	}
 
@@ -61,179 +61,177 @@ public class AFLP implements CXPlayer {
 
     private int[] AlphaBeta_Pruning(CXBoard B, boolean isMax, int alpha, int beta, int depth) throws TimeoutException {
         int[] pair = new int[2];
-
-        if(depth == 0 || B.gameState() != CXGameState.OPEN){
-            pair[0] = evaluate(B, B.getBoard()) - (DEPTH - depth);  pair[1] = B.getLastMove().j;
-            return pair;
-        }
-        else if(isMax){
-            pair[0] = -1000000;                     //eval
-            pair[1] = B.getAvailableColumns()[0];
-
-            int len = B.getAvailableColumns().length;
-            PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
-            int[] eval = new int[len];
-            int c = 0;
-
-            for(int i : B.getAvailableColumns()){
-                B.markColumn(i);
-                eval[c] = evalMove(B) - (DEPTH - depth)*2;
-                B.unmarkColumn();
-                c++;
+        try{
+            if(depth == 0 || B.gameState() != CXGameState.OPEN){
+                pair[0] = evaluate(B, B.getBoard());  pair[1] = B.getLastMove().j;
+                return pair;
             }
-            c = 0;
+            else if(isMax){
+                pair[0] = -1000000;                     //eval
+                pair[1] = B.getAvailableColumns()[0];
 
-            for(int i = 0; i < len; i++)
-                priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
+                int len = B.getAvailableColumns().length;
+                PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
+                int[] eval = new int[len];
+                int c = 0;
 
-            checktime();
-            for(int i = 0; i < len; i++){
-                Pair p = priorityQueue.poll();
-                int col = p.second;
+                for(int i : B.getAvailableColumns()){
+                    checktime();
+                    B.markColumn(i);
+                    eval[c] = evalMove(B) - (DEPTH - depth)*2;
+                    B.unmarkColumn();
+                    c++;
+                }
+                c = 0;
+
+                for(int i = 0; i < len; i++)
+                    priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
+
+                for(int i = 0; i < len; i++){
+                    Pair p = priorityQueue.poll();
+                    int col = p.second;
+                    checktime();
+                    B.markColumn(col);
+                    int tmp = AlphaBeta_Pruning(B, false, alpha, beta, depth-1)[0];
+                    if (pair[0] < tmp){
+                        pair[0] = tmp;
+                        pair[1] = col;
+                    }
+                    B.unmarkColumn();
+                    if(pair[0] > alpha)
+                        alpha = pair[0];
+
+                    if(alpha >= beta){      //cutoff Beta
+                        break;
+                    }
+                }
+
+            return pair;
+            }
+            else{
+                pair[0] = 1000000;
+                pair[1] = B.getAvailableColumns()[0];
+                int len = B.getAvailableColumns().length;
+                PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
+                int[] eval = new int[len];
+                int c = 0;
                 checktime();
-                B.markColumn(col);
-                int tmp = AlphaBeta_Pruning(B, false, alpha, beta, depth-1)[0];
-                if (pair[0] < tmp){
-                    pair[0] = tmp;
-                    pair[1] = col;
-                }
-                B.unmarkColumn();
-                if(pair[0] > alpha)
-                    alpha = pair[0];
+                for(int i : B.getAvailableColumns()){
 
-                if(alpha >= beta){      //cutoff Beta
-                    break;
+                    B.markColumn(i);
+                    eval[c] = evalMove(B) - (DEPTH - depth)*2;
+                    B.unmarkColumn();
+                    c++;
                 }
+                c = 0;
+
+
+                for(int i = 0; i < len; i++)
+                    priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
+
+                for(int i = 0; i < len; i++){
+                    Pair p = priorityQueue.poll();
+                    int col = p.second;
+                    checktime();
+                    B.markColumn(col);
+                    int tmp = AlphaBeta_Pruning(B, true, alpha, beta, depth-1)[0];
+                    if (pair[0] > tmp){
+                        pair[0] = tmp;
+                        pair[1] = col;
+                    }
+                    B.unmarkColumn();
+                    if(pair[0] < beta)
+                        beta = pair[0];
+
+                    if(alpha >= beta){      //cutoff Alpha
+                        break;
+                    }
+                }
+                return pair;
             }
-            return pair;
-        }
-        else{
-            pair[0] = 1000000;
-            pair[1] = B.getAvailableColumns()[0];
-            int len = B.getAvailableColumns().length;
-            PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
-            int[] eval = new int[len];
-            int c = 0;
 
-            for(int i : B.getAvailableColumns()){
-                B.markColumn(i);
-                eval[c] = evalMove(B) - (DEPTH - depth)*2;
-                B.unmarkColumn();
-                c++;
-            }
-            c = 0;
-
-
-            for(int i = 0; i < len; i++)
-                priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
-
-            checktime();
-            for(int i = 0; i < len; i++){
-                Pair p = priorityQueue.poll();
-                int col = p.second;
-                checktime();
-                B.markColumn(col);
-                int tmp = AlphaBeta_Pruning(B, true, alpha, beta, depth-1)[0];
-                if (pair[0] > tmp){
-                    pair[0] = tmp;
-                    pair[1] = col;
-                }
-                B.unmarkColumn();
-                if(pair[0] < beta)
-                    beta = pair[0];
-
-                if(alpha >= beta){      //cutoff Alpha
-                    break;
-                }
-            }
-            return pair;
-        }
+        }catch(TimeoutException e){ }
+        return pair;
     }
 
-    private int evalMove(CXBoard B) throws TimeoutException{
-        CXCell C = B.getLastMove();
+    private int evalMove(CXBoard B) throws TimeoutException {
         CXCellState[][] cellBoard = B.getBoard();
-        int i = C.i, j = C.j, b = 0, n = 1, n1 = 1, n2 = 1, n3 = 1, n4 = 1, b1 = 1, b2 = 1;
 
-        if(B.gameState() == myWin)
-            return 1000;
-        else if(B.gameState() == yourWin)
+        if(B.gameState() == myWin || B.gameState() == yourWin)
             return 1000;
         else if(B.gameState() == CXGameState.DRAW)
             return 0;
         else {    //controllo orizzontale
-            int k, plus;
-            for (k = 1; j-k >= 0 && cellBoard[i][j-k] == cellBoard[i][j]; k++) n++;
-            for(k = 1; j+k < B.N && cellBoard[i][j+k] == cellBoard[i][j]; k++) n++;
 
-            for (k = 1; j-k >= 0 && cellBoard[i][j-k] != cellBoard[i][j] && cellBoard[i][j-k] != CXCellState.FREE ; k++) b++;
-            for(k = 1; j+k < B.N && cellBoard[i][j+k] != cellBoard[i][j] && cellBoard[i][j+k] != CXCellState.FREE ; k++) b++;
+            CXCell C = B.getLastMove();
+            int i = C.i, j = C.j, b = 0, n = 1, n1 = 1, n2 = 1, n3 = 1, n4 = 1, b1 = 1, b2 = 1;
+            int k, plus = 0;
+            try{
+                for (k = 1; j-k >= 0 && cellBoard[i][j-k] == cellBoard[i][j]; k++) n++;
+                for(k = 1; j+k < B.N && cellBoard[i][j+k] == cellBoard[i][j]; k++) n++;
+                checktime();
+                for (k = 1; j-k >= 0 && cellBoard[i][j-k] != cellBoard[i][j] && cellBoard[i][j-k] != CXCellState.FREE ; k++) b++;
+                for(k = 1; j+k < B.N && cellBoard[i][j+k] != cellBoard[i][j] && cellBoard[i][j+k] != CXCellState.FREE ; k++) b++;
 
-            if(b == B.X - 1) b1++;
-            else if(b == B.X - 2) b2++;
+                if(b == B.X - 1) b1++;
+                else if(b == B.X - 2) b2++;
 
-            if(n == B.X - 1) n1++;
-            else if(n == B.X - 2) n2++;
-            else if(n == B.X - 3 && B.X > 5) n3++;
-            else if(n == B.X - 4 && B.X > 7) n4++;
+                if(n == B.X - 1) n1++;
+                else if(n == B.X - 2) n2++;
+                else if(n == B.X - 3 && B.X > 5) n3++;
+                else if(n == B.X - 4 && B.X > 7) n4++;
 
-            //controllo verticale
-            n = 1; b = 0;
-            for(k = 1; i+k < B.M && cellBoard[i+k][j] == cellBoard[i][j]; k++) n++;
-            for(k = 1; i+k < B.M && cellBoard[i+k][j] != cellBoard[i][j] && cellBoard[i+k][j] != CXCellState.FREE ; k++) b++;
+                //controllo verticale
+                n = 1; b = 0;
+                for(k = 1; i+k < B.M && cellBoard[i+k][j] == cellBoard[i][j]; k++) n++;
+                for(k = 1; i+k < B.M && cellBoard[i+k][j] != cellBoard[i][j] && cellBoard[i+k][j] != CXCellState.FREE ; k++) b++;
 
-            if(b == B.X - 1) b1++;
-            else if(b == B.X - 2) b2++;
+                if(b == B.X - 1) b1++;
+                else if(b == B.X - 2) b2++;
 
-            if(n == B.X - 1) n1++;
-            else if(n == B.X - 2) n2++;
-            else if(n == B.X - 3 && B.X > 5) n3++;
-            else if(n == B.X - 4 && B.X > 7) n4++;
-            checktime();
-            //controllo diagonale
-            n = 1; b = 0;
+                if(n == B.X - 1) n1++;
+                else if(n == B.X - 2) n2++;
+                else if(n == B.X - 3 && B.X > 5) n3++;
+                else if(n == B.X - 4 && B.X > 7) n4++;
+                checktime();
+                //controllo diagonale
+                n = 1; b = 0;
 
-            for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] == cellBoard[i][j]; k++) n++; // backward check
-            for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
+                for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] == cellBoard[i][j]; k++) n++; // backward check
+                for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
+                checktime();
+                for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] != cellBoard[i][j] && cellBoard[i-k][j-k] != CXCellState.FREE; k++) b++; // backward check
+                for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] != cellBoard[i][j] && cellBoard[i+k][j+k] != CXCellState.FREE; k++) b++;
 
-            for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] != cellBoard[i][j] && cellBoard[i-k][j-k] != CXCellState.FREE; k++) b++; // backward check
-            for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] != cellBoard[i][j] && cellBoard[i+k][j+k] != CXCellState.FREE; k++) b++;
+                if(b == B.X - 1) b1++;
+                else if(b == B.X - 2) b2++;
 
-            if(b == B.X - 1) b1++;
-            else if(b == B.X - 2) b2++;
-
-            if(n == B.X - 1) n1++;
-            else if(n == B.X - 2) n2++;
-            else if(n == B.X - 3 && B.X > 5) n3++;
-            else if(n == B.X - 4 && B.X > 7) n4++;
+                if(n == B.X - 1) n1++;
+                else if(n == B.X - 2) n2++;
+                else if(n == B.X - 3 && B.X > 5) n3++;
+                else if(n == B.X - 4 && B.X > 7) n4++;
 
 
-            //controllo anti-diagonale  (destra - sinistra /basso - alto)
-            n = 1; b = 0;
-            for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] == cellBoard[i][j]; k++) n++;
-            for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] == cellBoard[i][j]; k++) n++;
+                //controllo anti-diagonale  (destra - sinistra /basso - alto)
+                n = 1; b = 0;
+                for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] == cellBoard[i][j]; k++) n++;
+                for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] == cellBoard[i][j]; k++) n++;
+                checktime();
+                for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] != cellBoard[i][j] && cellBoard[i-k][j+k] != CXCellState.FREE; k++) n++;
+                for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] != cellBoard[i][j] && cellBoard[i+k][j-k] != CXCellState.FREE; k++) n++;
 
-            for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] != cellBoard[i][j] && cellBoard[i-k][j+k] != CXCellState.FREE; k++) n++;
-            for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] != cellBoard[i][j] && cellBoard[i+k][j-k] != CXCellState.FREE; k++) n++;
+                if(b == B.X - 1) b1++;
+                else if(b == B.X - 2) b2++;
 
-            if(b == B.X - 1) b1++;
-            else if(b == B.X - 2) b2++;
+                if(n == B.X - 1) n1++;
+                else if(n == B.X - 2 ) n2++;
+                else if(n == B.X - 3 && B.X > 5) n3++;
+                else if(n == B.X - 4 && B.X > 7) n4++;
 
-            if(n == B.X - 1) n1++;
-            else if(n == B.X - 2 ) n2++;
-            else if(n == B.X - 3 && B.X > 5) n3++;
-            else if(n == B.X - 4 && B.X > 7) n4++;
-
-            if(j - (B.X - 1) >= 0 && j + (B.X - 1) < B.N)
-                plus = 5;
-            else plus = 0;
-
-            //cambiare i seguenti punteggi per dare pesi diversi alle varie sequenze trovate
-            //int score1 = 50;
-            //int score2 = 20;
-            //int score3 = 10;
-            //int score4 = 5;
-            //int scoreBlock1 = 150;   //blocco vittoria avversario
+                if(j - (B.X - 1) >= 0 && j + (B.X - 1) < B.N)
+                    plus = 5;
+                else plus = 0;
+            }catch(TimeoutException e) {}
 
             return n1 * 50 + n2 * 30 + n3 * 10 + n4 * 5 + b1 * 100 + b2 * 40 + plus;
         }
@@ -246,58 +244,31 @@ public class AFLP implements CXPlayer {
             return -1000000;
         else if(B.gameState() == CXGameState.DRAW)
             return 0;
-        else if(hashtable.containsKey(board.toString())){
+        else if(hashtable.containsKey(board.toString()))
             return hashtable.get(board.toString());
-        }
         else{
             //valutazione euristica di una situazione di gioco non finale
             // nell'eval assegno punteggi positivi per le sequenze di pedine del player massimizzante
             // e negativi per il minimizzante
             //CXCellState s = B[i][j];
             //CXCellState s = B[i][j];
-            int n = 0;
+            int n = 0, eval = -1000000;
             int n1 = 0,n2 = 0, n3 = 0, n4 = 0; //n1 = numero di sequenze di lunghezza X-1, X-2 per n2, X-3 per n3, X-4 per n4
 
             //Ottimizzo gli indici --> da fare
             //i = 0...ultima riga con pedina
             //j = prima colonna con pedina...ultima colonna con pedina
-            int firstColumn = 0, lastColumn = B.N - 1; int lastRow = 0;
+            CXCell[] markedCells = B.getMarkedCells();
+            int i, j, k;
+            boolean enter_check = true, condition1, condition2;
 
-            for(int j = 0 ; j < B.N ; j++){
-                if(board[0][j] != CXCellState.FREE)
-                    break;
-                else firstColumn++;
-            }
-
-            for(int j = B.N - 1 ; j >= 0 ; j--){
-                if(board[0][j] != CXCellState.FREE)
-                    break;
-                else lastColumn--;
-            }
-
-            for(int j = firstColumn; j <= lastColumn; j++){
-                if(B.fullColumn(j)){
-                    lastRow = B.M - 1;
-                    break;
-                }
-                else{
-                    int i;
-                    for(i = 0; i < B.M && board[i][j] != CXCellState.FREE; i++){}
-                    if((i-1) > lastRow)
-                        lastRow = (i-1);
-                }
-            }
-
-            for(int i = 0; i <= lastRow; i++)
-            {
+            try {
                 checktime();
-                for(int j = firstColumn; j <= lastColumn; j++)
+                for(CXCell c : markedCells)
                 {
-                    //controllo orizzontale
-                    boolean enter_check = true;
-                    boolean condition1, condition2;
-                    int k;
-                    n = 1;
+                    i = c.i; j = c.j; n = 1;
+                    enter_check = true;
+
                     if(j-1 >= 0){
                         enter_check = (board[i][j-1] != board[i][j]);
                         condition1 = (board[i][j-1] == CXCellState.FREE);
@@ -326,9 +297,7 @@ public class AFLP implements CXPlayer {
                     }
 
                     //controllo verticale
-                    enter_check = true;
-                    condition1 = false;
-                    condition2 = false;
+                    enter_check = true; condition1 = false; condition2 = false;
                     n = 1;
                     if(i-1 >= 0){
                         enter_check = (board[i-1][j] != board[i][j]);
@@ -356,7 +325,6 @@ public class AFLP implements CXPlayer {
                         if(board[i][j] == maximizingCellState) n4++;
                         else n4--;
                     }
-
                     //controllo diagonale
                     enter_check = true;
                     condition1 = false;
@@ -420,14 +388,18 @@ public class AFLP implements CXPlayer {
                         else n4--;
                     }
                 }
-                checktime();
-            }
 
-            int eval = n1 * 50 + n2 * 20 + n3 * 10 + n4 * 5;
-            hashtable.put(board.toString(), eval);
+                eval = n1 * 50 + n2 * 20 + n3 * 10 + n4 * 5;
+                hashtable.put(board.toString(), eval);
+                return eval;
+            } catch (TimeoutException e) {    }
             return eval;
         }
     }
+
+
+
+
 
     private int[] iterativeDeepening(CXBoard B, boolean isMax, int depth) throws TimeoutException  {
         int[] pair = new int[2];
@@ -449,12 +421,10 @@ public class AFLP implements CXPlayer {
     @Override
     public int selectColumn(CXBoard B){
         START = System.currentTimeMillis(); // Save starting time
-        DEPTH = 100;
+        DEPTH = 20;
 		int out = 0;
 
-        try {
-            out = iterativeDeepening(B, isMaximizing, DEPTH)[1];
-        }
+        try {out = iterativeDeepening(B, isMaximizing, DEPTH)[1];}
         catch (TimeoutException e) {}
         return out;
     }
