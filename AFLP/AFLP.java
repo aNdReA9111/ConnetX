@@ -51,7 +51,7 @@ public class AFLP implements CXPlayer {
     }
 
     private void checktime() throws TimeoutException {
-		if ((System.currentTimeMillis() - START) / 1000.0 >= TIMEOUT * (50 / 100.0))
+		if ((System.currentTimeMillis() - START) / 1000.0 >= TIMEOUT * (90.0 / 100.0))
 			throw new TimeoutException();
 	}
 
@@ -61,179 +61,172 @@ public class AFLP implements CXPlayer {
 
     private int[] AlphaBeta_Pruning(CXBoard B, boolean isMax, int alpha, int beta, int depth) throws TimeoutException {
         int[] pair = new int[2];
-        try{
-            if(depth == 0 || B.gameState() != CXGameState.OPEN){
-                pair[0] = evaluate(B, B.getBoard());  pair[1] = B.getLastMove().j;
-                return pair;
-            }
-            else if(isMax){
-                pair[0] = -1000000;                     //eval
-                pair[1] = B.getAvailableColumns()[0];
-
-                int len = B.getAvailableColumns().length;
-                PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
-                int[] eval = new int[len];
-                int c = 0;
-
-                for(int i : B.getAvailableColumns()){
-                    checktime();
-                    B.markColumn(i);
-                    eval[c] = evalMove(B) - (DEPTH - depth)*2;
-                    B.unmarkColumn();
-                    c++;
-                }
-                c = 0;
-
-                for(int i = 0; i < len; i++)
-                    priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
-
-                for(int i = 0; i < len; i++){
-                    Pair p = priorityQueue.poll();
-                    int col = p.second;
-                    checktime();
-                    B.markColumn(col);
-                    int tmp = AlphaBeta_Pruning(B, false, alpha, beta, depth-1)[0];
-                    if (pair[0] < tmp){
-                        pair[0] = tmp;
-                        pair[1] = col;
-                    }
-                    B.unmarkColumn();
-                    if(pair[0] > alpha)
-                        alpha = pair[0];
-
-                    if(alpha >= beta){      //cutoff Beta
-                        break;
-                    }
-                }
-
+        
+        if(depth == 0 || B.gameState() != CXGameState.OPEN){
+            pair[0] = evaluate(B, B.getBoard());  pair[1] = B.getLastMove().j;
             return pair;
-            }
-            else{
-                pair[0] = 1000000;
-                pair[1] = B.getAvailableColumns()[0];
-                int len = B.getAvailableColumns().length;
-                PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
-                int[] eval = new int[len];
-                int c = 0;
+        }
+        else if(isMax){
+            pair[0] = -1000000;                     //eval
+            pair[1] = B.getAvailableColumns()[0];
+
+            int len = B.getAvailableColumns().length;
+            PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
+            int[] eval = new int[len];
+            int c = 0;
+
+            for(int i : B.getAvailableColumns()){
                 checktime();
-                for(int i : B.getAvailableColumns()){
+                B.markColumn(i);
+                eval[c] = evalMove(B) - (DEPTH - depth)*2;
+                B.unmarkColumn();
+                c++;
+            }
+            c = 0;
 
-                    B.markColumn(i);
-                    eval[c] = evalMove(B) - (DEPTH - depth)*2;
-                    B.unmarkColumn();
-                    c++;
+            for(int i = 0; i < len; i++)
+                priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
+
+            for(int i = 0; i < len; i++){
+                Pair p = priorityQueue.poll();
+                int col = p.second;
+                checktime();
+                B.markColumn(col);
+                int tmp = AlphaBeta_Pruning(B, false, alpha, beta, depth-1)[0];
+                if (pair[0] < tmp){
+                    pair[0] = tmp;
+                    pair[1] = col;
                 }
-                c = 0;
+                B.unmarkColumn();
+                if(pair[0] > alpha)
+                    alpha = pair[0];
 
-
-                for(int i = 0; i < len; i++)
-                    priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
-
-                for(int i = 0; i < len; i++){
-                    Pair p = priorityQueue.poll();
-                    int col = p.second;
-                    checktime();
-                    B.markColumn(col);
-                    int tmp = AlphaBeta_Pruning(B, true, alpha, beta, depth-1)[0];
-                    if (pair[0] > tmp){
-                        pair[0] = tmp;
-                        pair[1] = col;
-                    }
-                    B.unmarkColumn();
-                    if(pair[0] < beta)
-                        beta = pair[0];
-
-                    if(alpha >= beta){      //cutoff Alpha
-                        break;
-                    }
+                if(alpha >= beta){      //cutoff Beta
+                    break;
                 }
-                return pair;
             }
 
-        }catch(TimeoutException e){ }
         return pair;
+        }
+        else{
+            pair[0] = 1000000;
+            pair[1] = B.getAvailableColumns()[0];
+            int len = B.getAvailableColumns().length;
+            PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
+            int[] eval = new int[len];
+            int c = 0;
+            checktime();
+            for(int i : B.getAvailableColumns()){
+
+                B.markColumn(i);
+                eval[c] = evalMove(B) - (DEPTH - depth)*2;
+                B.unmarkColumn();
+                c++;
+            }
+            c = 0;
+
+
+            for(int i = 0; i < len; i++)
+                priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
+
+            for(int i = 0; i < len; i++){
+                Pair p = priorityQueue.poll();
+                int col = p.second;
+                checktime();
+                B.markColumn(col);
+                int tmp = AlphaBeta_Pruning(B, true, alpha, beta, depth-1)[0];
+                if (pair[0] > tmp){
+                    pair[0] = tmp;
+                    pair[1] = col;
+                }
+                B.unmarkColumn();
+                if(pair[0] < beta)
+                    beta = pair[0];
+
+                if(alpha >= beta){      //cutoff Alpha
+                    break;
+                }
+            }
+            return pair;
+        }
     }
 
     private int evalMove(CXBoard B) throws TimeoutException {
-        CXCellState[][] cellBoard = B.getBoard();
 
         if(B.gameState() == myWin || B.gameState() == yourWin)
             return 1000;
         else if(B.gameState() == CXGameState.DRAW)
             return 0;
         else {    //controllo orizzontale
-
+            CXCellState[][] cellBoard = B.getBoard();
             CXCell C = B.getLastMove();
             int i = C.i, j = C.j, b = 0, n = 1, n1 = 1, n2 = 1, n3 = 1, n4 = 1, b1 = 1, b2 = 1;
             int k, plus = 0;
-            try{
-                for (k = 1; j-k >= 0 && cellBoard[i][j-k] == cellBoard[i][j]; k++) n++;
-                for(k = 1; j+k < B.N && cellBoard[i][j+k] == cellBoard[i][j]; k++) n++;
-                checktime();
-                for (k = 1; j-k >= 0 && cellBoard[i][j-k] != cellBoard[i][j] && cellBoard[i][j-k] != CXCellState.FREE ; k++) b++;
-                for(k = 1; j+k < B.N && cellBoard[i][j+k] != cellBoard[i][j] && cellBoard[i][j+k] != CXCellState.FREE ; k++) b++;
 
-                if(b == B.X - 1) b1++;
-                else if(b == B.X - 2) b2++;
+            for (k = 1; j-k >= 0 && cellBoard[i][j-k] == cellBoard[i][j]; k++) n++;
+            for(k = 1; j+k < B.N && cellBoard[i][j+k] == cellBoard[i][j]; k++) n++;
+            checktime();
+            for (k = 1; j-k >= 0 && cellBoard[i][j-k] != cellBoard[i][j] && cellBoard[i][j-k] != CXCellState.FREE ; k++) b++;
+            for(k = 1; j+k < B.N && cellBoard[i][j+k] != cellBoard[i][j] && cellBoard[i][j+k] != CXCellState.FREE ; k++) b++;
 
-                if(n == B.X - 1) n1++;
-                else if(n == B.X - 2) n2++;
-                else if(n == B.X - 3 && B.X > 5) n3++;
-                else if(n == B.X - 4 && B.X > 7) n4++;
+            if(b == B.X - 1) b1++;
+            else if(b == B.X - 2) b2++;
 
-                //controllo verticale
-                n = 1; b = 0;
-                for(k = 1; i+k < B.M && cellBoard[i+k][j] == cellBoard[i][j]; k++) n++;
-                for(k = 1; i+k < B.M && cellBoard[i+k][j] != cellBoard[i][j] && cellBoard[i+k][j] != CXCellState.FREE ; k++) b++;
+            if(n == B.X - 1) n1++;
+            else if(n == B.X - 2) n2++;
+            else if(n == B.X - 3 && B.X > 5) n3++;
+            else if(n == B.X - 4 && B.X > 7) n4++;
 
-                if(b == B.X - 1) b1++;
-                else if(b == B.X - 2) b2++;
+            //controllo verticale
+            n = 1; b = 0;
+            for(k = 1; i+k < B.M && cellBoard[i+k][j] == cellBoard[i][j]; k++) n++;
+            for(k = 1; i+k < B.M && cellBoard[i+k][j] != cellBoard[i][j] && cellBoard[i+k][j] != CXCellState.FREE ; k++) b++;
 
-                if(n == B.X - 1) n1++;
-                else if(n == B.X - 2) n2++;
-                else if(n == B.X - 3 && B.X > 5) n3++;
-                else if(n == B.X - 4 && B.X > 7) n4++;
-                checktime();
-                //controllo diagonale
-                n = 1; b = 0;
+            if(b == B.X - 1) b1++;
+            else if(b == B.X - 2) b2++;
 
-                for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] == cellBoard[i][j]; k++) n++; // backward check
-                for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
-                checktime();
-                for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] != cellBoard[i][j] && cellBoard[i-k][j-k] != CXCellState.FREE; k++) b++; // backward check
-                for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] != cellBoard[i][j] && cellBoard[i+k][j+k] != CXCellState.FREE; k++) b++;
+            if(n == B.X - 1) n1++;
+            else if(n == B.X - 2) n2++;
+            else if(n == B.X - 3 && B.X > 5) n3++;
+            else if(n == B.X - 4 && B.X > 7) n4++;
+            checktime();
+            //controllo diagonale
+            n = 1; b = 0;
 
-                if(b == B.X - 1) b1++;
-                else if(b == B.X - 2) b2++;
+            for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] == cellBoard[i][j]; k++) n++; // backward check
+            for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
+            checktime();
+            for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] != cellBoard[i][j] && cellBoard[i-k][j-k] != CXCellState.FREE; k++) b++; // backward check
+            for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] != cellBoard[i][j] && cellBoard[i+k][j+k] != CXCellState.FREE; k++) b++;
 
-                if(n == B.X - 1) n1++;
-                else if(n == B.X - 2) n2++;
-                else if(n == B.X - 3 && B.X > 5) n3++;
-                else if(n == B.X - 4 && B.X > 7) n4++;
+            if(b == B.X - 1) b1++;
+            else if(b == B.X - 2) b2++;
+
+            if(n == B.X - 1) n1++;
+            else if(n == B.X - 2) n2++;
+            else if(n == B.X - 3 && B.X > 5) n3++;
+            else if(n == B.X - 4 && B.X > 7) n4++;
 
 
-                //controllo anti-diagonale  (destra - sinistra /basso - alto)
-                n = 1; b = 0;
-                for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] == cellBoard[i][j]; k++) n++;
-                for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] == cellBoard[i][j]; k++) n++;
-                checktime();
-                for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] != cellBoard[i][j] && cellBoard[i-k][j+k] != CXCellState.FREE; k++) n++;
-                for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] != cellBoard[i][j] && cellBoard[i+k][j-k] != CXCellState.FREE; k++) n++;
+            //controllo anti-diagonale  (destra - sinistra /basso - alto)
+            n = 1; b = 0;
+            for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] == cellBoard[i][j]; k++) n++;
+            for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] == cellBoard[i][j]; k++) n++;
+            checktime();
+            for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] != cellBoard[i][j] && cellBoard[i-k][j+k] != CXCellState.FREE; k++) n++;
+            for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] != cellBoard[i][j] && cellBoard[i+k][j-k] != CXCellState.FREE; k++) n++;
 
-                if(b == B.X - 1) b1++;
-                else if(b == B.X - 2) b2++;
+            if(b == B.X - 1) b1++;
+            else if(b == B.X - 2) b2++;
 
-                if(n == B.X - 1) n1++;
-                else if(n == B.X - 2 ) n2++;
-                else if(n == B.X - 3 && B.X > 5) n3++;
-                else if(n == B.X - 4 && B.X > 7) n4++;
+            if(n == B.X - 1) n1++;
+            else if(n == B.X - 2 ) n2++;
+            else if(n == B.X - 3 && B.X > 5) n3++;
+            else if(n == B.X - 4 && B.X > 7) n4++;
 
-                if(j - (B.X - 1) >= 0 && j + (B.X - 1) < B.N)
-                    plus = 5;
-                else plus = 0;
-            }catch(TimeoutException e) {}
-
-            return n1 * 50 + n2 * 30 + n3 * 10 + n4 * 5 + b1 * 100 + b2 * 40 + plus;
+            if(j - (B.X - 1) >= 0 && j + (B.X - 1) < B.N)
+                plus = 5;
+            return n1 * 50 + n2 * 20 + n3 * 10 + n4 * 5 + b1 * 100 + b2 * 40 + plus;
         }
     }
 
@@ -252,7 +245,7 @@ public class AFLP implements CXPlayer {
             // e negativi per il minimizzante
             //CXCellState s = B[i][j];
             //CXCellState s = B[i][j];
-            int n = 0, eval = -1000000;
+            int n = 0, eval;
             int n1 = 0,n2 = 0, n3 = 0, n4 = 0; //n1 = numero di sequenze di lunghezza X-1, X-2 per n2, X-3 per n3, X-4 per n4
 
             //Ottimizzo gli indici --> da fare
@@ -262,137 +255,135 @@ public class AFLP implements CXPlayer {
             int i, j, k;
             boolean enter_check = true, condition1, condition2;
 
-            try {
-                for(CXCell c : markedCells)
-                {
-                    i = c.i; j = c.j; n = 1;
-                    enter_check = true;
+            for(CXCell c : markedCells)
+            {
+                checktime();
+                i = c.i; j = c.j; n = 1;
+                enter_check = true; condition1 = false; condition2 = false;
 
-                    if(j-1 >= 0){
-                        enter_check = (board[i][j-1] != board[i][j]);
-                        condition1 = (board[i][j-1] == CXCellState.FREE);
-                    }
-                    else condition1 = false;
-                    for(k = 1; enter_check && j+k < B.N && board[i][j+k] == board[i][j]; k++) n++;
-                    if(j+k >= B.N){
-                        condition2 = false;
-                    }
-                    else condition2 = (board[i][j+k] == CXCellState.FREE);
-                    if(n == B.X - 1 && (condition1 || condition2)){
-                        if(board[i][j] == maximizingCellState) n1++;
-                        else n1--;
-                    }
-                    else if(n == B.X - 2 && (condition1 || condition2)){
-                        if(board[i][j] == maximizingCellState) n2++;
-                        else n2--;
-                    }
-                    else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
-                        if(board[i][j] == maximizingCellState) n3++;
-                        else n3--;
-                    }
-                    else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
-                        if(board[i][j] == maximizingCellState) n4++;
-                        else n4--;
-                    }
-
-                    //controllo verticale
-                    enter_check = true; condition1 = false; condition2 = false;
-                    n = 1;
-                    if(i-1 >= 0){
-                        enter_check = (board[i-1][j] != board[i][j]);
-                        condition1 = (board[i-1][j] == CXCellState.FREE);
-                    }
-                    else condition1 = false;
-                    for(k = 1; enter_check && i+k < B.M && board[i+k][j] == board[i][j]; k++) n++;
-                    if(i+k >= B.M) {
-                        condition2 = false;
-                    }
-                    else condition2 = (board[i+k][j] == CXCellState.FREE);
-                    if(n == B.X - 1 && (condition1 || condition2)){
-                        if(board[i][j] == maximizingCellState) n1++;
-                        else n1--;
-                    }
-                    else if(n == B.X - 2 && (condition1 || condition2)){
-                        if(board[i][j] == maximizingCellState) n2++;
-                        else n2--;
-                    }
-                    else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
-                        if(board[i][j] == maximizingCellState) n3++;
-                        else n3--;
-                    }
-                    else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
-                        if(board[i][j] == maximizingCellState) n4++;
-                        else n4--;
-                    }
-                    checktime();
-                    //controllo diagonale
-                    enter_check = true;
-                    condition1 = false;
+                if(j-1 >= 0){
+                    enter_check = (board[i][j-1] != board[i][j]);
+                    condition1 = (board[i][j-1] == CXCellState.FREE);
+                }
+                else condition1 = false;
+                for(k = 1; enter_check && j+k < B.N && board[i][j+k] == board[i][j]; k++) n++;
+                if(j+k >= B.N){
                     condition2 = false;
-                    n = 1;
-                    if(i-1 >= 0 && j-1 >= 0){
-                        enter_check = (board[i-1][j-1] != board[i][j]);
-                        condition1 = (board[i-1][j-1] == CXCellState.FREE);
-                    }
-                    else condition1 = false;
-                    for(k = 1; enter_check && (i+k < B.M  && j+k < B.N ) && board[i+k][j+k] == board[i][j]; k++) n++;
-                    if(i+k >= B.M || j+k >= B.N) {
-                        condition2 = false;
-                    }
-                    else condition2 = (board[i+k][j+k] == CXCellState.FREE);
-                    if(n == B.X - 1 && (condition1 || condition2)){
-                        if(board[i][j] == maximizingCellState) n1++;
-                        else n1--;
-                    }
-                    else if(n == B.X - 2 && (condition1 || condition2)){
-                        if(board[i][j] == maximizingCellState) n2++;
-                        else n2--;
-                    }
-                    else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
-                        if(board[i][j] == maximizingCellState) n3++;
-                        else n3--;
-                    }
-                    else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
-                        if(board[i][j] == maximizingCellState) n4++;
-                        else n4--;
-                    }
-                    //controllo anti-diagonale  (destra - sinistra /basso - alto)
-                    enter_check = true;
-                    condition1 = false;
-                    condition2 = false;
-                    n = 1;
-                    if(i-1 >= 0 && j+1 < B.N){
-                        enter_check = (board[i-1][j+1] != board[i][j]);
-                        condition1 = (board[i-1][j+1] == CXCellState.FREE);
-                    }
-                    else condition1 = false;
-                    for(k = 1; enter_check && (i+k < B.M  && j-k >= 0) && board[i+k][j-k] == board[i][j]; k++) n++;
-                    if(i+k >= B.M || j-k < 0) {
-                        condition2 = false;
-                    }
-                    else condition2 = (board[i+k][j-k] == CXCellState.FREE);
-                    if(n == B.X - 1 && (condition1 || condition2)){
-                        if(board[i][j] == maximizingCellState) n1++;
-                        else n1--;
-                    }
-                    else if(n == B.X - 2 && (condition1 || condition2)){
-                        if(board[i][j] == maximizingCellState) n2++;
-                        else n2--;
-                    }
-                    else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
-                        if(board[i][j] == maximizingCellState) n3++;
-                        else n3--;
-                    }
-                    else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
-                        if(board[i][j] == maximizingCellState) n4++;
-                        else n4--;
-                    }
+                }
+                else condition2 = (board[i][j+k] == CXCellState.FREE);
+                if(n == B.X - 1 && (condition1 || condition2)){
+                    if(board[i][j] == maximizingCellState) n1++;
+                    else n1--;
+                }
+                else if(n == B.X - 2 && (condition1 || condition2)){
+                    if(board[i][j] == maximizingCellState) n2++;
+                    else n2--;
+                }
+                else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
+                    if(board[i][j] == maximizingCellState) n3++;
+                    else n3--;
+                }
+                else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
+                    if(board[i][j] == maximizingCellState) n4++;
+                    else n4--;
                 }
 
-                eval = n1 * 50 + n2 * 20 + n3 * 10 + n4 * 5;
-                hashtable.put(board.toString(), eval);
-                return eval;
-            } catch (TimeoutException e) {    }
+                //controllo verticale
+                enter_check = true; condition1 = false; condition2 = false;
+                n = 1;
+                if(i-1 >= 0){
+                    enter_check = (board[i-1][j] != board[i][j]);
+                    condition1 = (board[i-1][j] == CXCellState.FREE);
+                }
+                else condition1 = false;
+                for(k = 1; enter_check && i+k < B.M && board[i+k][j] == board[i][j]; k++) n++;
+                if(i+k >= B.M) {
+                    condition2 = false;
+                }
+                else condition2 = (board[i+k][j] == CXCellState.FREE);
+                if(n == B.X - 1 && (condition1 || condition2)){
+                    if(board[i][j] == maximizingCellState) n1++;
+                    else n1--;
+                }
+                else if(n == B.X - 2 && (condition1 || condition2)){
+                    if(board[i][j] == maximizingCellState) n2++;
+                    else n2--;
+                }
+                else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
+                    if(board[i][j] == maximizingCellState) n3++;
+                    else n3--;
+                }
+                else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
+                    if(board[i][j] == maximizingCellState) n4++;
+                    else n4--;
+                }
+                checktime();
+                //controllo diagonale
+                enter_check = true;
+                condition1 = false;
+                condition2 = false;
+                n = 1;
+                if(i-1 >= 0 && j-1 >= 0){
+                    enter_check = (board[i-1][j-1] != board[i][j]);
+                    condition1 = (board[i-1][j-1] == CXCellState.FREE);
+                }
+                else condition1 = false;
+                for(k = 1; enter_check && (i+k < B.M  && j+k < B.N ) && board[i+k][j+k] == board[i][j]; k++) n++;
+                if(i+k >= B.M || j+k >= B.N) {
+                    condition2 = false;
+                }
+                else condition2 = (board[i+k][j+k] == CXCellState.FREE);
+                if(n == B.X - 1 && (condition1 || condition2)){
+                    if(board[i][j] == maximizingCellState) n1++;
+                    else n1--;
+                }
+                else if(n == B.X - 2 && (condition1 || condition2)){
+                    if(board[i][j] == maximizingCellState) n2++;
+                    else n2--;
+                }
+                else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
+                    if(board[i][j] == maximizingCellState) n3++;
+                    else n3--;
+                }
+                else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
+                    if(board[i][j] == maximizingCellState) n4++;
+                    else n4--;
+                }
+                //controllo anti-diagonale  (destra - sinistra /basso - alto)
+                enter_check = true;
+                condition1 = false;
+                condition2 = false;
+                n = 1;
+                if(i-1 >= 0 && j+1 < B.N){
+                    enter_check = (board[i-1][j+1] != board[i][j]);
+                    condition1 = (board[i-1][j+1] == CXCellState.FREE);
+                }
+                else condition1 = false;
+                for(k = 1; enter_check && (i+k < B.M  && j-k >= 0) && board[i+k][j-k] == board[i][j]; k++) n++;
+                if(i+k >= B.M || j-k < 0) {
+                    condition2 = false;
+                }
+                else condition2 = (board[i+k][j-k] == CXCellState.FREE);
+                if(n == B.X - 1 && (condition1 || condition2)){
+                    if(board[i][j] == maximizingCellState) n1++;
+                    else n1--;
+                }
+                else if(n == B.X - 2 && (condition1 || condition2)){
+                    if(board[i][j] == maximizingCellState) n2++;
+                    else n2--;
+                }
+                else if(n == B.X - 3 && (condition1 || condition2) && B.X > 5){
+                    if(board[i][j] == maximizingCellState) n3++;
+                    else n3--;
+                }
+                else if(n == B.X - 4 && (condition1 || condition2) && B.X > 7){
+                    if(board[i][j] == maximizingCellState) n4++;
+                    else n4--;
+                }
+            }
+
+            eval = n1 * 50 + n2 * 20 + n3 * 10 + n4 * 5;
+            hashtable.put(board.toString(), eval);
             return eval;
         }
     }
@@ -421,7 +412,7 @@ public class AFLP implements CXPlayer {
     @Override
     public int selectColumn(CXBoard B){
         START = System.currentTimeMillis(); // Save starting time
-        DEPTH = 20;
+        DEPTH = 100;
 		int out = 0;
 
         try {out = iterativeDeepening(B, isMaximizing, DEPTH)[1];}
