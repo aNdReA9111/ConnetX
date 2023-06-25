@@ -157,21 +157,21 @@ test:
 	java -Xmx6g -cp ".." connectx.CXPlayerTester 7 7 5 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
 
 big-test:
-	java -Xmx6g -cp ".." connectx.CXPlayerTester 20 20 10 connectx.AFLP.AFLP connectx.L1.L1 -v -t $(TIME) -r 1
+	java -Xmx6g -cp ".." connectx.CXPlayerTester 20 20 10 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
 	echo "\n"
-	java -Xmx6g -cp ".." connectx.CXPlayerTester 20 20 10 connectx.L1.L1 connectx.AFLP.AFLP -v -t $(TIME) -r 1
+	java -Xmx6g -cp ".." connectx.CXPlayerTester 20 20 10 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
 	echo "\n"
-	java -Xmx6g -cp ".." connectx.CXPlayerTester 30 30 10 connectx.AFLP.AFLP connectx.L1.L1 -v -t $(TIME) -r 1
+	java -Xmx6g -cp ".." connectx.CXPlayerTester 30 30 10 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
 	echo "\n"
-	java -Xmx6g -cp ".." connectx.CXPlayerTester 30 30 10 connectx.L1.L1 connectx.AFLP.AFLP -v -t $(TIME) -r 1
+	java -Xmx6g -cp ".." connectx.CXPlayerTester 30 30 10 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
 	echo "\n"
-	java -Xmx6g -cp ".." connectx.CXPlayerTester 40 40 10 connectx.AFLP.AFLP connectx.L1.L1 -v -t $(TIME) -r 1
+	java -Xmx6g -cp ".." connectx.CXPlayerTester 40 40 10 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
 	echo "\n"
-	java -Xmx6g -cp ".." connectx.CXPlayerTester 40 40 10 connectx.L1.L1 connectx.AFLP.AFLP -v -t $(TIME) -r 1
+	java -Xmx6g -cp ".." connectx.CXPlayerTester 40 40 10 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
 	echo "\n"
-	java -Xmx6g -cp ".." connectx.CXPlayerTester 50 50 10 connectx.AFLP.AFLP connectx.L1.L1 -v -t $(TIME) -r 1
+	java -Xmx6g -cp ".." connectx.CXPlayerTester 50 50 10 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1
 	echo "\n"
-	java -Xmx6g -cp ".." connectx.CXPlayerTester 50 50 10 connectx.L1.L1 connectx.AFLP.AFLP -v -t $(TIME) -r 1
+	java -Xmx6g -cp ".." connectx.CXPlayerTester 50 50 10 connectx.L1.L1 connectx.AFLP.AFLP -t $(TIME) -r 1
 
 full-test:
 	java -Xmx6g -cp ".." connectx.CXPlayerTester 4 4 4 connectx.AFLP.AFLP connectx.L1.L1 -t $(TIME) -r 1

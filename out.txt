@@ -1,0 +1,45 @@
+java -Xmx6g -cp ".." connectx.CXPlayerTester 20 20 10 connectx.AFLP.AFLP connectx.L1.L1 -t 1 -r 1
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+echo "\n"
+
+
+java -Xmx6g -cp ".." connectx.CXPlayerTester 20 20 10 connectx.L1.L1 connectx.AFLP.AFLP -t 1 -r 1
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+echo "\n"
+
+
+java -Xmx6g -cp ".." connectx.CXPlayerTester 30 30 10 connectx.AFLP.AFLP connectx.L1.L1 -t 1 -r 1
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+echo "\n"
+
+
+java -Xmx6g -cp ".." connectx.CXPlayerTester 30 30 10 connectx.L1.L1 connectx.AFLP.AFLP -t 1 -r 1
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+echo "\n"
+
+
+java -Xmx6g -cp ".." connectx.CXPlayerTester 40 40 10 connectx.AFLP.AFLP connectx.L1.L1 -t 1 -r 1
+AFLP Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+L1 Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+echo "\n"
+
+
+java -Xmx6g -cp ".." connectx.CXPlayerTester 40 40 10 connectx.L1.L1 connectx.AFLP.AFLP -t 1 -r 1
+L1 Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+AFLP Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+echo "\n"
+
+
+java -Xmx6g -cp ".." connectx.CXPlayerTester 50 50 10 connectx.AFLP.AFLP connectx.L1.L1 -t 1 -r 1
+AFLP Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+L1 Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0
+echo "\n"
+
+
+java -Xmx6g -cp ".." connectx.CXPlayerTester 50 50 10 connectx.L1.L1 connectx.AFLP.AFLP -t 1 -r 1
+L1 Score: 0 Won: 0 Lost: 1 Draw: 0 Error: 0
+AFLP Score: 3 Won: 1 Lost: 0 Draw: 0 Error: 0

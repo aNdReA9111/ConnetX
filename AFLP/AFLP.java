@@ -60,15 +60,15 @@ public class AFLP implements CXPlayer {
     }
 
     private int[] AlphaBeta_Pruning(CXBoard B, boolean isMax, int alpha, int beta, int depth) throws TimeoutException {
-        int[] pair = new int[2];
+        int[] choice = new int[2];
 
         if(depth == 0 || B.gameState() != CXGameState.OPEN){
-            pair[0] = evaluate(B, B.getBoard());  pair[1] = B.getLastMove().j;
-            return pair;
+            choice[0] = evaluate(B, B.getBoard());  choice[1] = B.getLastMove().j;
+            return choice;
         }
         else if(isMax){
-            pair[0] = -1000000;                     //eval
-            pair[1] = B.getAvailableColumns()[0];
+            choice[0] = -1000000;                     //eval
+            choice[1] = B.getAvailableColumns()[0];
 
             int len = B.getAvailableColumns().length;
             PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
@@ -88,24 +88,24 @@ public class AFLP implements CXPlayer {
                 checktime();
                 B.markColumn(col);
                 int tmp = AlphaBeta_Pruning(B, false, alpha, beta, depth-1)[0];
-                if (pair[0] < tmp){
-                    pair[0] = tmp;
-                    pair[1] = col;
+                if (choice[0] < tmp){
+                    choice[0] = tmp;
+                    choice[1] = col;
                 }
                 B.unmarkColumn();
-                if(pair[0] > alpha)
-                    alpha = pair[0];
+                if(choice[0] > alpha)
+                    alpha = choice[0];
 
                 if(alpha >= beta){      //cutoff Beta
                     break;
                 }
             }
 
-        return pair;
+        return choice;
         }
         else{
-            pair[0] = 1000000;
-            pair[1] = B.getAvailableColumns()[0];
+            choice[0] = 1000000;
+            choice[1] = B.getAvailableColumns()[0];
             int len = B.getAvailableColumns().length;
             PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
             int eval = 0;
@@ -124,19 +124,19 @@ public class AFLP implements CXPlayer {
                 checktime();
                 B.markColumn(col);
                 int tmp = AlphaBeta_Pruning(B, true, alpha, beta, depth-1)[0];
-                if (pair[0] > tmp){
-                    pair[0] = tmp;
-                    pair[1] = col;
+                if (choice[0] > tmp){
+                    choice[0] = tmp;
+                    choice[1] = col;
                 }
                 B.unmarkColumn();
-                if(pair[0] < beta)
-                    beta = pair[0];
+                if(choice[0] < beta)
+                    beta = choice[0];
 
                 if(alpha >= beta){      //cutoff Alpha
                     break;
                 }
             }
-            return pair;
+            return choice;
         }
     }
 
@@ -182,10 +182,10 @@ public class AFLP implements CXPlayer {
             //controllo diagonale
             n = 1; b = 0;
 
-            for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] == cellBoard[i][j]; k++) n++; // backward check
+            for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] == cellBoard[i][j]; k++) n++; 
             for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] == cellBoard[i][j]; k++) n++;
             checktime();
-            for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] != cellBoard[i][j] && cellBoard[i-k][j-k] != CXCellState.FREE; k++) b++; // backward check
+            for (k = 1; i-k >= 0 && j-k >= 0 && cellBoard[i-k][j-k] != cellBoard[i][j] && cellBoard[i-k][j-k] != CXCellState.FREE; k++) b++;
             for(k = 1; (i+k < B.M  && j+k < B.N ) && cellBoard[i+k][j+k] != cellBoard[i][j] && cellBoard[i+k][j+k] != CXCellState.FREE; k++) b++;
 
             if(b == B.X - 1) b1++;
@@ -197,7 +197,7 @@ public class AFLP implements CXPlayer {
             else if(n == B.X - 4 && B.X > 7) n4++;
 
 
-            //controllo anti-diagonale  (destra - sinistra /basso - alto)
+            //controllo anti-diagonale 
             n = 1; b = 0;
             for (k = 1; i-k >= 0 && j+k < B.N && cellBoard[i-k][j+k] == cellBoard[i][j]; k++) n++;
             for(k = 1;(i+k < B.M  && j-k >= 0) && cellBoard[i+k][j-k] == cellBoard[i][j]; k++) n++;
@@ -231,7 +231,7 @@ public class AFLP implements CXPlayer {
         else if(hashtable.containsKey(board.toString()))
             return hashtable.get(board.toString());
         else{
-            //valutazione euristica di una situazione di gioco non finale
+            // valutazione euristica di una situazione di gioco non finale
             // nell'eval assegno punteggi positivi per le sequenze di pedine del player massimizzante
             // e negativi per il minimizzante
             int n = 0, eval;
@@ -335,7 +335,7 @@ public class AFLP implements CXPlayer {
                     if(board[i][j] == maximizingCellState) n4++;
                     else n4--;
                 }
-                //controllo anti-diagonale  (destra - sinistra /basso - alto)
+                //controllo anti-diagonale  
                 enter_check = true;
                 condition1 = false;
                 condition2 = false;
@@ -376,20 +376,20 @@ public class AFLP implements CXPlayer {
 
 
     private int[] iterativeDeepening(CXBoard B, boolean isMax, int depth) throws TimeoutException  {
-        int[] pair = new int[2];
+        int[] choice = new int[2];
         int alpha = -1000000, beta = 1000000;
         try{
             for(int i = 1; i < depth; i++){
                 checktime();
-                pair = AlphaBeta_Pruning(B, isMax, alpha, beta, i);
+                choice = AlphaBeta_Pruning(B, isMax, alpha, beta, i);
             }
         }
         catch (TimeoutException e) {
             //System.err.println("Tempo quasi finito, ritorno una scelta a profondità minore!");
-            return pair;
+            return choice;
         }
 
-        return pair;
+        return choice;
     }
 
     @Override
