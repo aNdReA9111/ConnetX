@@ -1,0 +1,26 @@
+java -Xmx6g -cp ".." connectx.CXPlayerTester 20 20 10 connectx.AFLP.AFLP connectx.L1.L1 -v -t 10 -r 1
+Game type : 20,20,10
+Player1   : AFLP
+Player2   : L1
+Rounds    : 1
+Timeout   : 10 secs
+
+
+
+**** ROUND 1 ****
+Initializing 20,20 board
+Initializing AFLP as Player 1
+Initializing L1 as Player 2
+
+Player 1 (AFLP) -> [19,9]
+Player 2 (L1) -> [19,7]
+Player 1 (AFLP) -> [18,9]
+Player 2 (L1) -> [19,16]
+Player 1 (AFLP) -> [17,9]
+Player 2 (L1) -> [19,5]
+Player 1 (AFLP) -> [16,9]
+Player 2 (L1) -> [19,14]
+Player 1 (AFLP) -> [15,9]
+Player 2 (L1) -> [19,13]
+Player 1 (AFLP) -> [14,9]
+Player 2 (L1) -> [19,19]

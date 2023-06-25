@@ -61,7 +61,7 @@ public class AFLP implements CXPlayer {
 
     private int[] AlphaBeta_Pruning(CXBoard B, boolean isMax, int alpha, int beta, int depth) throws TimeoutException {
         int[] pair = new int[2];
-        
+
         if(depth == 0 || B.gameState() != CXGameState.OPEN){
             pair[0] = evaluate(B, B.getBoard());  pair[1] = B.getLastMove().j;
             return pair;
@@ -80,12 +80,10 @@ public class AFLP implements CXPlayer {
                 B.markColumn(i);
                 eval[c] = evalMove(B) - (DEPTH - depth)*2;
                 B.unmarkColumn();
+                priorityQueue.offer(new Pair(eval[c], i));
                 c++;
             }
             c = 0;
-
-            for(int i = 0; i < len; i++)
-                priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
 
             for(int i = 0; i < len; i++){
                 Pair p = priorityQueue.poll();
@@ -115,19 +113,16 @@ public class AFLP implements CXPlayer {
             PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
             int[] eval = new int[len];
             int c = 0;
-            checktime();
-            for(int i : B.getAvailableColumns()){
 
+            for(int i : B.getAvailableColumns()){
+                checktime();
                 B.markColumn(i);
                 eval[c] = evalMove(B) - (DEPTH - depth)*2;
                 B.unmarkColumn();
+                priorityQueue.offer(new Pair(eval[c], i));
                 c++;
             }
             c = 0;
-
-
-            for(int i = 0; i < len; i++)
-                priorityQueue.offer(new Pair(eval[i], B.getAvailableColumns()[i]));
 
             for(int i = 0; i < len; i++){
                 Pair p = priorityQueue.poll();
@@ -161,7 +156,7 @@ public class AFLP implements CXPlayer {
             CXCellState[][] cellBoard = B.getBoard();
             CXCell C = B.getLastMove();
             int i = C.i, j = C.j, b = 0, n = 1, n1 = 1, n2 = 1, n3 = 1, n4 = 1, b1 = 1, b2 = 1;
-            int k, plus = 0;
+            int k, plus = 0, eval = 0;
 
             for (k = 1; j-k >= 0 && cellBoard[i][j-k] == cellBoard[i][j]; k++) n++;
             for(k = 1; j+k < B.N && cellBoard[i][j+k] == cellBoard[i][j]; k++) n++;
@@ -226,7 +221,9 @@ public class AFLP implements CXPlayer {
 
             if(j - (B.X - 1) >= 0 && j + (B.X - 1) < B.N)
                 plus = 5;
-            return n1 * 50 + n2 * 20 + n3 * 10 + n4 * 5 + b1 * 100 + b2 * 40 + plus;
+
+            eval = n1 * 50 + n2 * 20 + n3 * 10 + n4 * 5 + b1 * 100 + b2 * 40 + plus;
+            return eval;
         }
     }
 
@@ -243,14 +240,9 @@ public class AFLP implements CXPlayer {
             //valutazione euristica di una situazione di gioco non finale
             // nell'eval assegno punteggi positivi per le sequenze di pedine del player massimizzante
             // e negativi per il minimizzante
-            //CXCellState s = B[i][j];
-            //CXCellState s = B[i][j];
             int n = 0, eval;
             int n1 = 0,n2 = 0, n3 = 0, n4 = 0; //n1 = numero di sequenze di lunghezza X-1, X-2 per n2, X-3 per n3, X-4 per n4
 
-            //Ottimizzo gli indici --> da fare
-            //i = 0...ultima riga con pedina
-            //j = prima colonna con pedina...ultima colonna con pedina
             CXCell[] markedCells = B.getMarkedCells();
             int i, j, k;
             boolean enter_check = true, condition1, condition2;
@@ -387,9 +379,6 @@ public class AFLP implements CXPlayer {
             return eval;
         }
     }
-
-
-
 
 
     private int[] iterativeDeepening(CXBoard B, boolean isMax, int depth) throws TimeoutException  {
