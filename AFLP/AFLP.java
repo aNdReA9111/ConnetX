@@ -72,18 +72,15 @@ public class AFLP implements CXPlayer {
 
             int len = B.getAvailableColumns().length;
             PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
-            int[] eval = new int[len];
-            int c = 0;
+            int eval = 0;
 
             for(int i : B.getAvailableColumns()){
                 checktime();
                 B.markColumn(i);
-                eval[c] = evalMove(B) - (DEPTH - depth)*2;
+                eval = evalMove(B) - (DEPTH - depth)*2;
                 B.unmarkColumn();
-                priorityQueue.offer(new Pair(eval[c], i));
-                c++;
+                priorityQueue.offer(new Pair(eval, i));
             }
-            c = 0;
 
             for(int i = 0; i < len; i++){
                 Pair p = priorityQueue.poll();
@@ -111,18 +108,15 @@ public class AFLP implements CXPlayer {
             pair[1] = B.getAvailableColumns()[0];
             int len = B.getAvailableColumns().length;
             PriorityQueue<Pair> priorityQueue = new PriorityQueue<>(len);
-            int[] eval = new int[len];
-            int c = 0;
+            int eval = 0;
 
             for(int i : B.getAvailableColumns()){
                 checktime();
                 B.markColumn(i);
-                eval[c] = evalMove(B) - (DEPTH - depth)*2;
+                eval = evalMove(B) - (DEPTH - depth)*2;
                 B.unmarkColumn();
-                priorityQueue.offer(new Pair(eval[c], i));
-                c++;
+                priorityQueue.offer(new Pair(eval, i));
             }
-            c = 0;
 
             for(int i = 0; i < len; i++){
                 Pair p = priorityQueue.poll();

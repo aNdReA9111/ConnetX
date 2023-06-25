@@ -1,5 +1,5 @@
 ROUND=10
-TIME=10
+TIME=1
 M=5
 N=5
 X=4
